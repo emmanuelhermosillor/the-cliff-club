@@ -4,40 +4,67 @@ import type { AnexoModel } from "@/lib/catalogos";
 function Khead({ children }: { children: React.ReactNode }) {
   return (<><div className="khead">{children}</div><div className="hair" /></>);
 }
-function Tile({ lbl, val, tan }: { lbl: string; val: string; tan?: boolean }) {
+function Tile({ lbl, val, tone }: { lbl: string; val: string; tone?: "blue" | "tan" | "teal" }) {
   return (
-    <div className={`stat ${tan ? "tan" : "blue"}`}>
+    <div className={`stat ${tone ?? "blue"}`}>
       <div className="lbl">{lbl}</div>
       <div className="val" style={{ fontSize: 22 }}>{val}</div>
     </div>
   );
 }
 
+// Posiciones APROXIMADAS de los comparables sobre el mapa de Quivira (TODO: exactas de Gerardo).
+const PINS: { top: string; left: string }[] = [
+  { top: "40%", left: "62%" }, { top: "34%", left: "70%" }, { top: "46%", left: "78%" },
+  { top: "30%", left: "52%" }, { top: "58%", left: "40%" }, { top: "50%", left: "24%" }, { top: "64%", left: "70%" },
+];
+
 export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: string; fecha: string }) {
   const M = model;
   return (
     <div className="doc">
-      {/* Portada */}
-      <section className="page blue">
-        <img className="wm" src="/brand/logo_wordmark.png" alt="The Cliff Club Residences" style={{ height: 52 }} />
-        <div className="aob" style={{ fontStyle: "normal", fontSize: 22, marginTop: 26 }}>Anexo · Análisis de inversión</div>
-        <div className="cabos" style={{ marginTop: 6 }}>At Quivira · Los Cabos · B.C.S.</div>
-        <div className="bline" />
-        <div className="cabos">{M.etapaNombre} · {M.unidadEtiqueta} · {fecha}</div>
-        {M.esProyeccion && <div className="cabos" style={{ marginTop: 14, opacity: .9 }}>Escenario en proyección · sujeto a confirmación de Gerardo / Adrián</div>}
+      {/* Portada — banda azul + ficha */}
+      <section className="page anexo-portada">
+        <div className="band">
+          <img src="/brand/wordmark_shell.svg" alt="The Cliff Club Residences" />
+          <div className="aob">The Art of Being</div>
+        </div>
+        <div className="apright">
+          <div className="ap-field"><div className="l">Desarrollo</div><div className="v">The Cliff Club Residences</div></div>
+          <div className="ap-field"><div className="l">Ubicación</div><div className="v">At Quivira · Los Cabos · B.C.S.</div></div>
+          <div className="ap-field"><div className="l">Tema</div><div className="v">Anexo · {M.etapaNombre}</div></div>
+          <div className="ap-field"><div className="l">Unidad de Negocio</div><div className="v">Comercialización</div></div>
+          <div className="ap-field"><div className="l">Fecha</div><div className="v">{fecha}</div></div>
+          {M.esProyeccion && <div className="note" style={{ marginTop: 6 }}>Escenario en proyección · sujeto a confirmación de Gerardo / Adrián.</div>}
+        </div>
       </section>
 
-      {/* Confidencialidad */}
+      {/* Confidencialidad (verbatim, 3 párrafos) */}
       <section className="page">
         <Khead>Confidencialidad</Khead>
-        <p className="lead2">Este documento ha sido preparado por The Cliff Club Residences para uso exclusivo del destinatario, utilizando información obtenida de fuentes disponibles a Adria y otras fuentes públicas. Las valoraciones contenidas en este documento implican elementos de juicio y análisis subjetivos. Adria no ha verificado de forma independiente la información contenida en este documento, ni hace declaración o garantía, ya sea expresa o implícita, en cuanto a la exactitud, integridad o fiabilidad de la información contenida en este documento. El destinatario no debe considerarlo como un sustituto del ejercicio de su propio juicio.</p>
-        <p className="lead2">Cualquier estimación o proyección sobre hechos futuros (ingresos, gastos, ingresos netos y rendimiento) se basa en el mejor juicio de Adria. No hay garantía de que estas estimaciones o proyecciones se cumplirán; los resultados reales variarán y dichas variaciones pueden ser importantes. Este documento se ha preparado únicamente con fines informativos y no debe interpretarse como asesoramiento legal, fiscal, contable o de inversión, ni como una recomendación. Es confidencial, para uso exclusivo de su destinatario.</p>
+        <p className="lead2">
+          Este documento ha sido preparado por The Cliff Club Residences para uso exclusivo del destinatario, utilizando información obtenida de fuentes disponibles a Adria y otras fuentes públicas. Las valoraciones contenidas en este documento implican elementos de juicio y análisis subjetivos. Adria no ha verificado de forma independiente la información contenida en este documento, ni hace declaración o garantía, ya sea expresa o implícita, en cuanto a la exactitud, integridad o fiabilidad de la información contenida en este documento. El destinatario no debe considerarlo como un sustituto del ejercicio de su propio juicio.
+        </p>
+        <p className="lead2">
+          Este documento puede contener declaraciones a futuro. Adria no asume obligación de actualizar estas declaraciones a futuro en función de los acontecimientos o circunstancias que se produzcan con posterioridad a la fecha de este documento. Cualquier información u opinión expresada en este documento está sujeta a cambios sin previo aviso. Cualquier estimación o proyección sobre hechos que puedan ocurrir en el futuro (incluyendo proyecciones de ingresos, gastos, ingresos netos y rendimiento de las acciones, títulos o certificados) se basan en el mejor juicio de Adria a partir de la información proporcionada a través de su cliente y otra información disponible públicamente. No hay garantía de que estas estimaciones o proyecciones se cumplirán. Los resultados reales variarán con respecto a las proyecciones y dichas variaciones pueden ser importantes. Nada de lo contenido en este documento es o deberá ser considerado como una promesa o declaración en cuanto al pasado o al futuro. Ni Adria ni sus afiliados, directores, funcionarios, empleados o agentes asumen responsabilidad alguna relacionada o resultante del uso de todo o parte de este documento.
+        </p>
+        <p className="lead2">
+          Este documento se ha preparado únicamente con fines informativos y no debe interpretarse como una solicitud o una oferta de compra o venta de valores u otros instrumentos financieros. El destinatario de este documento no debe interpretar su contenido como un asesoramiento legal, fiscal, contable o de inversión, ni como una recomendación. Este documento no pretende ser exhaustivo ni contener toda la información que el destinatario podría necesitar. Ninguna inversión, desinversión u otra decisión o acción financiera debe basarse únicamente en la información contenida en este documento. Este documento ha sido preparado de forma confidencial únicamente para el uso y beneficio de su destinatario. Se prohíbe la distribución de este documento a cualquier persona que no sea el destinatario o sus asesores profesionales, quienes deberán mantener la confidencialidad de este material y atenerse a las limitaciones aquí expuestas, bajo la responsabilidad del destinatario.
+        </p>
         <div className="dfoot">The Cliff Club Residences · The Art of Being</div>
       </section>
 
-      {/* 01 Competitive Set */}
+      {/* 01 Competitive Set — mapa de Quivira con pines */}
       <section className="page">
         <Khead>01 · Quivira Competitive Set</Khead>
+        <div className="anexo-map" style={{ marginBottom: 14 }}>
+          <img src="/renders/masterplan.jpg" alt="Quivira · Competitive Set" />
+          {PINS.map((p, i) => (
+            <span key={i} className="pin" style={{ top: p.top, left: p.left }}>{i + 1}</span>
+          ))}
+          <span className="pin cliff" style={{ top: "72%", left: "50%" }}>The Cliff Club</span>
+        </div>
+        <p className="note" style={{ margin: "0 0 12px" }}>Posiciones de comparables aproximadas sobre Quivira. TODO: ubicaciones exactas.</p>
         <table className="amort2">
           <thead><tr><th>ID</th><th>Desarrollo</th><th>Descripción</th><th className="r">M² Total</th><th className="r">Pr/M² USD</th><th className="r">Valor</th></tr></thead>
           <tbody>
@@ -48,7 +75,6 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
             <tr style={{ background: "var(--card-blue)" }}><td className="n">{M.sujeto.id}</td><td>{M.sujeto.desarrollo}</td><td>{M.sujeto.descripcion}</td><td className="r">{M.sujeto.m2}</td><td className="r">{M.sujeto.prM2}</td><td className="r">{M.sujeto.valor}</td></tr>
           </tbody>
         </table>
-        <p className="note" style={{ marginTop: 12 }}>Referencia de mercado (Quivira). The Cliff Club destacado.</p>
         <div className="dfoot">The Cliff Club Residences · Torre B · {M.etapaNombre}</div>
       </section>
 
@@ -58,15 +84,15 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
         <div className="stat-row" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
           <Tile lbl="Valor Actual" val={`${M.valorActualM2} / m²`} />
           <Tile lbl={`Descuento ${M.etapaNombre}`} val={M.descuento} />
-          <Tile lbl="Valor de Entrada" val={`${M.valorEntradaM2} / m²`} tan />
+          <Tile lbl="Valor de Entrada" val={`${M.valorEntradaM2} / m²`} tone="teal" />
           <Tile lbl="Plusvalía anual (conservador)" val={M.plusvaliaAnual} />
           <Tile lbl="Plusvalía a 5 años" val={`${M.plusvalia5M2} / m²`} />
-          <Tile lbl="Margen proyectado por venta" val={M.margenVenta} tan />
+          <Tile lbl="Margen proyectado por venta" val={M.margenVenta} tone="tan" />
         </div>
         <Khead>03 · Utilidad por Compra-Venta</Khead>
         <div className="twocol">
           <div>
-            <div className="colhead">Valor actual / Descuento</div>
+            <div className="rowgroup">Valor actual / Descuento</div>
             <div className="kv"><span className="k">Área en m²</span><span className="val">{M.areaM2}</span></div>
             <div className="kv"><span className="k">Valor actual por m²</span><span className="val">{M.valorActualM2}</span></div>
             <div className="kv"><span className="k">Valor actual</span><span className="val">{M.valorActual}</span></div>
@@ -75,7 +101,7 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
             <div className="kv tot"><span className="k">Valor total</span><span className="val">{M.valorTotal}</span></div>
           </div>
           <div>
-            <div className="colhead">Plusvalía y venta</div>
+            <div className="rowgroup">Plusvalía y venta</div>
             <div className="kv"><span className="k">Plusvalía anual @ mercado</span><span className="val">{M.plusvaliaAnual}</span></div>
             <div className="kv"><span className="k">Valor por m² (5 años)</span><span className="val">{M.valorVentaM2}</span></div>
             <div className="kv"><span className="k">Valor de venta</span><span className="val">{M.valorVenta}</span></div>
@@ -93,7 +119,7 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
         <Khead>04 · Utilidad por Renta</Khead>
         <div className="twocol">
           <div>
-            <div className="colhead">Ingresos y gastos</div>
+            <div className="rowgroup">Ingresos y gastos</div>
             <div className="kv"><span className="k">Precio de renta diario (ADR)</span><span className="val">{M.adr}</span></div>
             <div className="kv"><span className="k">Ocupación mensual</span><span className="val">{M.ocupacion}</span></div>
             <div className="kv"><span className="k">Valor de renta mensual</span><span className="val">{M.rentaMensual}</span></div>
@@ -102,7 +128,7 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
             <div className="kv tot"><span className="k">Renta neta mensual</span><span className="val">{M.rentaNetaMensual}</span></div>
           </div>
           <div>
-            <div className="colhead">Ingresos anuales</div>
+            <div className="rowgroup">Ingresos anuales</div>
             <div className="kv"><span className="k">Renta neta · Año 01</span><span className="val">{M.rentaAnio1}</span></div>
             <div className="kv"><span className="k">Renta neta · Año 02*</span><span className="val">{M.rentaAnio2}</span></div>
             <div className="kv tot"><span className="k">Ingreso por renta total</span><span className="val">{M.rentaTotal}</span></div>
@@ -113,7 +139,7 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
         <div className="stat-row" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
           <Tile lbl="Utilidad por renta" val={M.utilidadRenta} />
           <Tile lbl="Utilidad por venta" val={M.utilidadVenta} />
-          <Tile lbl="Utilidad total" val={M.utilidadTotal} tan />
+          <Tile lbl="Utilidad total" val={M.utilidadTotal} tone="tan" />
         </div>
         <div className="dfoot">The Cliff Club Residences · Torre B · {M.etapaNombre}</div>
       </section>
@@ -133,11 +159,13 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
           </tbody>
         </table>
         <Khead>07 · Indicadores</Khead>
-        <div className="stat-row">
-          <Tile lbl="Margen proyectado" val={M.margenProyectado} tan />
+        <div className="margen-banner">
+          <span className="l">Margen proyectado</span><span className="v">{M.margenProyectado}</span>
+        </div>
+        <div className="stat-row" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
           <Tile lbl="Inversión" val={M.inversion} />
           <Tile lbl="Utilidad proyectada" val={M.utilidadProyectada} />
-          <Tile lbl="TIR estimada" val={M.tir} tan />
+          <Tile lbl="TIR estimada" val={M.tir} tone="teal" />
         </div>
         <p className="note" style={{ marginTop: 8 }}>{M.tirNota}{M.esProyeccion ? " Escenario en proyección — sujeto a confirmación de Gerardo / Adrián." : ""}</p>
         <div className="dfoot">The Cliff Club Residences · Torre B · {M.etapaNombre}</div>
@@ -169,7 +197,7 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
 
       {/* Contraportada */}
       <section className="page blue">
-        <img className="wm" src="/brand/logo_monograma.png" alt="The Cliff Club Residences" style={{ height: "3in", width: "auto" }} />
+        <img className="wm" src="/brand/logo_compuesto_shell.svg" alt="The Cliff Club Residences" style={{ height: "3in", width: "auto" }} />
         <div className="cabos" style={{ marginTop: 22 }}>At Quivira · Los Cabos · B.C.S.</div>
       </section>
     </div>

@@ -30,7 +30,7 @@ export default function LoginPage() {
   return (
     <div className="login">
       <form className="card" onSubmit={signIn}>
-        <img className="wm" src="/brand/logo_wordmark.png" alt="The Cliff Club Residences" style={{ width: 220, height: "auto" }} />
+        <img className="wm" src="/brand/wordmark_blue.svg" alt="The Cliff Club Residences" style={{ width: 240, height: "auto" }} />
         <div className="sub">Cotizador &amp; CRM · Acceso privado</div>
         <div className="field">
           <label htmlFor="li-email">Correo</label>

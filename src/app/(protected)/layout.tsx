@@ -24,7 +24,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   return (
     <>
       <header className="top">
-        <img className="wm" src="/brand/logo_wordmark.png" alt="The Cliff Club" />
+        <img className="wm" src="/brand/wordmark_shell.svg" alt="The Cliff Club" />
         <Nav isAdmin={isAdmin} />
         <span className="spacer" />
         <span className="who">

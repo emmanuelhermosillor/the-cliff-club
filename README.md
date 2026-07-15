@@ -83,6 +83,19 @@ Placeholders con `TODO` (pendientes de Gerardo):
 - **UX**: el cotizador es un formulario con resumen en vivo; el documento y el Anexo solo se
   muestran al pulsar Generar. Descargar PDF imprime el documento activo (print CSS).
 
+## CRM (v5)
+El cotizador captura al prospecto completo (nombre/correo/teléfono/origen) y lo empareja por
+correo→teléfono→nombre (sin duplicar). Cada cotización congela los modelos de propuesta y Anexo
+en `datos` para re-descargarlos con cifras congeladas (`/cotizaciones/[id]`). Prospectos: búsqueda,
+filtro por estado, cambio de estado inline, edición y ficha (`/prospectos/[id]`) con sus cotizaciones
+e historial, y borrado con confirmación de dos pasos + cascada. Todo respeta RLS.
+
+## Assets de marca
+Logos oficiales vectoriales (SVG) en `public/brand/`: `wordmark_shell.svg` (crema, sobre azul/oscuro),
+`wordmark_blue.svg` (login), `logo_compuesto_shell.svg` (contraportadas). Master plan del desarrollo
+(edificios): `public/renders/masterplan_desarrollo.jpg` (propuesta). Mapa costero de Quivira:
+`public/renders/masterplan.jpg` (Anexo · Competitive Set, con pines aproximados).
+
 ## Pendientes
 - Assets subibles por admin: Master Plan y Master Plan con Torre B señalada (placeholders con TODO).
 - ADR por tipología en el Anexo (hoy fijo $450); TIR de CR/FR es estimada del flujo anual.

@@ -28,7 +28,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
       {/* ===== 1 · PORTADA (azul sólida) ===== */}
       <section className="page cover-portada">
         <div>
-          <img className="cover-logo" src="/brand/logo_wordmark.png" alt="The Cliff Club Residences" />
+          <img className="cover-logo" src="/brand/wordmark_shell.svg" alt="The Cliff Club Residences" />
           <div className="cover-cabos">At Quivira · Los Cabos · B.C.S.</div>
         </div>
         <div className="cp-mid">
@@ -102,7 +102,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           </div>
           <div>
             <div className="colhead">Master Plan</div>
-            <div className="imgwide" style={{ height: "2.2in" }}><img src="/renders/masterplan.jpg" alt="Master Plan · Quivira" /></div>
+            <div className="imgwide" style={{ height: "2.2in" }}><img src="/renders/masterplan_desarrollo.jpg" alt="Master Plan · The Cliff Club" /></div>
           </div>
         </div>
         <div className="dfoot">The Cliff Club Residences · At Quivira · Los Cabos</div>
@@ -207,7 +207,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           <div>
             <div className="colhead">01 · Ubicación en el proyecto</div>
             <div className="imgwide" style={{ height: "2in", marginBottom: 8, position: "relative" }}>
-              <img src="/renders/masterplan.jpg" alt="Master Plan · Quivira" />
+              <img src="/renders/masterplan_desarrollo.jpg" alt="Master Plan · The Cliff Club" />
               <span className="mp-badge">Torre {model.torre} · ubicación aprox.</span>
             </div>
             <p className="note">Master Plan de Quivira · ubicación de Torre {model.torre} aproximada. TODO: sustituir por la versión con Torre {model.torre} resaltada (Gerardo).</p>
@@ -244,7 +244,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           <div>
             <div className="colhead">Plano del modelo</div>
             {model.planoSrc ? (
-              <div className="imgwide" style={{ height: "2.6in" }}><img src={model.planoSrc} alt={`Plano ${U.recamaras}`} /></div>
+              <div className="planobox" style={{ height: "2.9in" }}><img src={model.planoSrc} alt={`Plano ${U.recamaras}`} /></div>
             ) : (
               <div className="uploadbox" style={{ minHeight: "2.6in" }}><b>Plano del modelo</b>pendiente</div>
             )}
@@ -315,7 +315,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
 
       {/* ===== 10 · CONTRAPORTADA ===== */}
       <section className="page blue">
-        <img className="wm" src="/brand/logo_monograma.png" alt="The Cliff Club Residences — The Art of Being" style={{ height: "3.4in", width: "auto" }} />
+        <img className="wm" src="/brand/logo_compuesto_shell.svg" alt="The Cliff Club Residences — The Art of Being" style={{ height: "3.4in", width: "auto" }} />
         <div className="cabos" style={{ marginTop: 24 }}>At Quivira · Los Cabos · B.C.S.</div>
         <div className="bline" />
         <div className="cabos">Contacto · {model.canalContacto}</div>

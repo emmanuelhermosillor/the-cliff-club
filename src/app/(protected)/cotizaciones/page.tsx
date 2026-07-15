@@ -1,18 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { CotizacionesList, type CotRow } from "@/components/cotizaciones/CotizacionesList";
 
-type Cotizacion = {
-  id: string;
-  folio: number;
-  etapa: string;
-  tipologia: string;
-  valor_total: number | null;
-  estado: string;
-  created_at: string;
-  datos: { etapa?: string; tipologia?: string; unidad?: string } | null;
+type Raw = {
+  id: string; folio: number; etapa: string; tipologia: string;
+  valor_total: number | null; estado: string; created_at: string;
+  datos: { etapa?: string; unidad?: string } | null;
   prospectos: { nombre: string } | null;
 };
-
-const money = (n: number | null) => (n == null ? "—" : "$" + Math.round(n).toLocaleString("en-US"));
 
 export default async function CotizacionesPage() {
   const supabase = await createClient();
@@ -21,7 +15,12 @@ export default async function CotizacionesPage() {
     .select("id, folio, etapa, tipologia, valor_total, estado, created_at, datos, prospectos(nombre)")
     .order("created_at", { ascending: false });
 
-  const rows = (data as unknown as Cotizacion[] | null) ?? [];
+  const raw = (data as unknown as Raw[] | null) ?? [];
+  const rows: CotRow[] = raw.map((c) => ({
+    id: c.id, folio: c.folio, estado: c.estado, valor_total: c.valor_total, created_at: c.created_at,
+    etapaNombre: c.datos?.etapa || c.etapa, unidad: c.datos?.unidad || c.tipologia,
+    prospecto: c.prospectos?.nombre ?? "",
+  }));
 
   return (
     <>
@@ -29,33 +28,7 @@ export default async function CotizacionesPage() {
       <p className="lead">
         {error ? `Error: ${error.message}` : `Todas las cotizaciones generadas. ${rows.length} en total.`}
       </p>
-      <table className="data">
-        <thead>
-          <tr><th>Folio</th><th>Prospecto</th><th>Etapa / unidad</th><th>Valor</th><th>Estado</th><th>Fecha</th></tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td colSpan={6} style={{ color: "var(--warm)" }}>
-                Aún no hay cotizaciones. Genera una en el Cotizador y pulsa &ldquo;Guardar en CRM&rdquo;.
-              </td>
-            </tr>
-          ) : (
-            rows.map((c) => (
-              <tr key={c.id}>
-                <td className="mono">#{c.folio}</td>
-                <td><b>{c.prospectos?.nombre || "—"}</b></td>
-                <td>
-                  {(c.datos?.etapa || c.etapa)} · {(c.datos?.unidad || c.datos?.tipologia || c.tipologia)}
-                </td>
-                <td>{money(c.valor_total)}</td>
-                <td><span className="tag">{c.estado}</span></td>
-                <td className="mono" style={{ fontSize: "11px" }}>{(c.created_at || "").slice(0, 10)}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      <CotizacionesList rows={rows} />
     </>
   );
 }

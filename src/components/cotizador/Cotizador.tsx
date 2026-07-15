@@ -26,6 +26,9 @@ export function Cotizador({ etapas, unidades }: { etapas: EtapaOption[]; unidade
   const [m2Manual, setM2Manual] = useState("");
   const [recManual, setRecManual] = useState(REC_OPTS[0]);
   const [cliente, setCliente] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [origen, setOrigen] = useState("");
   const [fecha, setFecha] = useState("");
 
   const [model, setModel] = useState<ProposalModel | null>(null);
@@ -99,7 +102,7 @@ export function Cotizador({ etapas, unidades }: { etapas: EtapaOption[]; unidade
     if (!ui) { showToast("Elige una unidad antes de guardar."); return; }
     setSaving(true);
     try {
-      const res = await guardarCotizacion(etapaClave, ui, cliente, formatFecha(fecha));
+      const res = await guardarCotizacion(etapaClave, ui, { cliente, correo, telefono, origen }, formatFecha(fecha));
       if (res.ok) showToast(`Cotización #${res.folio} guardada en el CRM para ${cliente.trim()}.`);
       else showToast(res.error || "No se pudo guardar.");
     } finally {
@@ -147,6 +150,18 @@ export function Cotizador({ etapas, unidades }: { etapas: EtapaOption[]; unidade
         <div className="field">
           <label htmlFor="c-cliente">Nombre del cliente</label>
           <input id="c-cliente" placeholder="Nombre y apellido" value={cliente} onChange={(e) => setCliente(e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="c-correo">Correo</label>
+          <input id="c-correo" type="email" placeholder="correo@dominio.com" value={correo} onChange={(e) => setCorreo(e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="c-tel">Teléfono</label>
+          <input id="c-tel" placeholder="+52 …" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="c-origen">Origen</label>
+          <input id="c-origen" placeholder="Referido, campaña, broker…" value={origen} onChange={(e) => setOrigen(e.target.value)} />
         </div>
         <div className="field">
           <label htmlFor="c-fecha">Fecha</label>
