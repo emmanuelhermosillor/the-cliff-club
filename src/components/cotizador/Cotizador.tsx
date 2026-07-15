@@ -11,6 +11,15 @@ const FECHA_PH = "__ / __ / ____";
 const LIBRE = "__LIBRE__";
 const REC_OPTS = ["1 recámara", "2 recámaras", "3 recámaras", "4 recámaras"];
 
+// Normaliza la fecha a DD/MM/AAAA (acepta "15072026", "15/07/2026", "15 07 2026").
+function formatFecha(raw: string): string {
+  const s = raw.trim();
+  if (!s) return "";
+  const d = s.replace(/\D/g, "");
+  if (d.length === 8) return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`;
+  return s;
+}
+
 export function Cotizador({ etapas, unidades }: { etapas: EtapaOption[]; unidades: UnidadOption[] }) {
   const [etapaClave, setEtapaClave] = useState(etapas[0]?.clave ?? "");
   const [unidadSel, setUnidadSel] = useState<string>(unidades[0]?.clave ?? LIBRE);
@@ -74,7 +83,7 @@ export function Cotizador({ etapas, unidades }: { etapas: EtapaOption[]; unidade
     if (!ui) { showToast("Elige una unidad para generar el Anexo."); return; }
     setBusy(true);
     try {
-      const a = await computeAnexo(etapaClave, ui, fecha.trim() || FECHA_PH);
+      const a = await computeAnexo(etapaClave, ui, formatFecha(fecha) || FECHA_PH);
       setAnexo(a);
       setShowAnexo(true);
       setTimeout(() => document.getElementById("doc-anexo")?.scrollIntoView({ behavior: "smooth" }), 60);
@@ -90,7 +99,7 @@ export function Cotizador({ etapas, unidades }: { etapas: EtapaOption[]; unidade
     if (!ui) { showToast("Elige una unidad antes de guardar."); return; }
     setSaving(true);
     try {
-      const res = await guardarCotizacion(etapaClave, ui, cliente, fecha);
+      const res = await guardarCotizacion(etapaClave, ui, cliente, formatFecha(fecha));
       if (res.ok) showToast(`Cotización #${res.folio} guardada en el CRM para ${cliente.trim()}.`);
       else showToast(res.error || "No se pudo guardar.");
     } finally {
@@ -99,7 +108,8 @@ export function Cotizador({ etapas, unidades }: { etapas: EtapaOption[]; unidade
   }
 
   const cli = cliente.trim() || CLIENTE_PH;
-  const fec = fecha.trim() || FECHA_PH;
+  const fecFmt = formatFecha(fecha);
+  const fec = fecFmt || FECHA_PH;
 
   return (
     <>

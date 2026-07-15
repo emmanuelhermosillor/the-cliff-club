@@ -25,24 +25,30 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
 
   return (
     <div className="doc">
-      {/* ===== 1 · PORTADA ===== */}
-      <section className="page bleed">
-        <img className="bimg" src="/renders/s01_portada.png" alt="The Cliff Club Residences" />
-        <div className="bveil" />
-        <div className="binner">
-          <div>
-            <img className="cover-logo" src="/brand/logo_wordmark.png" alt="The Cliff Club Residences" />
-            <div className="cover-cabos">At Quivira · Los Cabos · B.C.S.</div>
-          </div>
-          <div className="cover-bottom">
-            <div className="cover-kick">Etapa privada · Propuesta de inversión</div>
-            <div className="cover-etapa">{E.nombre}</div>
-            <div className="cover-tag">{E.tag}</div>
-            <div className="cover-meta">
-              <span>Preparada para · {cliente}</span>
-              <span>Expedición · {fecha}</span>
-            </div>
-          </div>
+      {/* ===== 1 · PORTADA (azul sólida) ===== */}
+      <section className="page cover-portada">
+        <div>
+          <img className="cover-logo" src="/brand/logo_wordmark.png" alt="The Cliff Club Residences" />
+          <div className="cover-cabos">At Quivira · Los Cabos · B.C.S.</div>
+        </div>
+        <div className="cp-mid">
+          <span className="pill">Etapa privada · Propuesta de inversión</span>
+          <h1 className="cp-etapa">{E.nombre}</h1>
+          <div className="cp-tag">{E.tag}</div>
+        </div>
+        <div className="cover-meta">
+          <span>Preparada para · {cliente}</span>
+          <span>Expedición · {fecha}</span>
+        </div>
+      </section>
+
+      {/* ===== 2 · HERO edificio (img a sangre, sí imprime) ===== */}
+      <section className="page hero-bleed">
+        <img className="bimg" src="/renders/hero_edificio.jpg" alt="The Cliff Club Residences · Los Cabos" />
+        <div className="hero-veil" />
+        <div className="hero-text">
+          <div className="hero-kick">The Cliff Club Residences · At Quivira</div>
+          <div className="hero-line">Los Cabos, desde su borde más privado.</div>
         </div>
       </section>
 
@@ -96,7 +102,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           </div>
           <div>
             <div className="colhead">Master Plan</div>
-            <div className="uploadbox" style={{ minHeight: "2.2in" }}><b>Master Plan</b>pendiente de Gerardo</div>
+            <div className="imgwide" style={{ height: "2.2in" }}><img src="/renders/masterplan.jpg" alt="Master Plan · Quivira" /></div>
           </div>
         </div>
         <div className="dfoot">The Cliff Club Residences · At Quivira · Los Cabos</div>
@@ -200,8 +206,11 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
         <div className="twocol" style={{ gap: 26 }}>
           <div>
             <div className="colhead">01 · Ubicación en el proyecto</div>
-            <div className="uploadbox" style={{ minHeight: "2in", marginBottom: 8 }}><b>Master Plan — Torre {model.torre} señalada</b>pendiente de Gerardo</div>
-            <p className="note">Torre {model.torre} señalada sobre el master plan.</p>
+            <div className="imgwide" style={{ height: "2in", marginBottom: 8, position: "relative" }}>
+              <img src="/renders/masterplan.jpg" alt="Master Plan · Quivira" />
+              <span className="mp-badge">Torre {model.torre} · ubicación aprox.</span>
+            </div>
+            <p className="note">Master Plan de Quivira · ubicación de Torre {model.torre} aproximada. TODO: sustituir por la versión con Torre {model.torre} resaltada (Gerardo).</p>
           </div>
           <div>
             <div className="colhead">02 · Piso y disponibilidad — Torre {model.torre}</div>

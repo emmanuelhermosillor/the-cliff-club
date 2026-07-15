@@ -172,6 +172,35 @@ h2.title { font-family: var(--display); font-weight: 500; font-size: 40px; line-
 .cover-tag { font-family: var(--display); font-style: italic; font-size: 20px; color: #f0efe9; }
 .cover-meta { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,.4); margin-top: 26px; padding-top: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #eef4f2; }
 
+/* ---- impresión de color de marca (raíz del bug de PDF) ---- */
+html, body, .page, .sheet, [class*="card"], .stat, .acard, .cover, .contraportada,
+.page.blue, .page.cover-portada, .bcell, .board2, .khead, .hl, .pill {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ---- PORTADA azul sólida (v4) ---- */
+.page.cover-portada {
+  background: var(--blue); color: var(--shell);
+  align-items: center; text-align: center; padding: 1in .85in;
+}
+.cover-portada .cover-logo { height: 74px; filter: brightness(0) invert(1); }
+.cover-portada .cover-cabos { color: var(--shell); margin-top: 14px; }
+.cover-portada .cp-mid { margin: auto 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.pill { display: inline-block; border: 1px solid rgba(251,245,238,.55); border-radius: 999px; padding: 7px 18px; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--shell); }
+.cover-portada .cp-etapa { font-family: var(--display); font-size: 60px; line-height: 1; color: var(--shell); margin: 0; }
+.cover-portada .cp-tag { font-family: var(--display); font-style: italic; font-size: 21px; color: #f2efe8; max-width: 5.4in; }
+.cover-portada .cover-meta { width: 100%; color: var(--shell); border-top-color: rgba(251,245,238,.4); }
+
+/* ---- HERO edificio a sangre (img, sí imprime) ---- */
+.page.hero-bleed { padding: 0; justify-content: flex-end; }
+.page.hero-bleed .bimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.page.hero-bleed .hero-veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,28,30,.05) 40%, rgba(20,28,30,.55) 100%); }
+.page.hero-bleed .hero-text { position: relative; z-index: 2; padding: .85in; color: #fff; }
+.hero-text .hero-kick { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #eef4f2; }
+.hero-text .hero-line { font-family: var(--display); font-size: 30px; color: #fff; margin-top: 8px; }
+.mp-badge { position: absolute; top: 8px; right: 8px; z-index: 2; background: rgba(107,157,161,.92); color: var(--shell); font-family: var(--mono); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; }
+
 /* contraportada azul */
 .page.blue { background: var(--blue); color: #fff; align-items: center; justify-content: center; text-align: center; }
 .page.blue .mono-mark { width: 46px; height: auto; filter: brightness(0) invert(1); opacity: .95; margin-bottom: 26px; }
@@ -244,6 +273,7 @@ h2.title { font-family: var(--display); font-weight: 500; font-size: 40px; line-
 
 /* ---------- print: 1 lámina = 1 hoja carta ---------- */
 @media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body * { visibility: hidden; }
   .printdoc, .printdoc * { visibility: visible; }
   .printdoc { position: absolute; left: 0; top: 0; padding: 0; background: #fff; }
