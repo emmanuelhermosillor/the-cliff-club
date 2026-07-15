@@ -1,0 +1,135 @@
+@import "tailwindcss";
+@import "../design-system/tokens.css";
+
+/* The Cliff Club — Tailwind v4 CSS-first theme.
+   next/font injects --font-cormorant / --font-eb / --font-space on <html>.
+   Ideal (licenciadas): IvyOra Display / IvyOra Text / Söhne Mono — ver public/fonts/README. */
+@theme {
+  --color-blue: #6B9DA1;
+  --color-mist: #C3D1DF;
+  --color-shell: #FBF5EE;
+  --color-sand: #CABBA8;
+  --color-warm: #BFB3AA;
+  --color-moss: #C9CDBE;
+  --color-ink: #2A2724;
+  --color-line: #D8D2C7;
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-text: var(--font-eb), "EB Garamond", Georgia, serif;
+  --font-mono: var(--font-space), "Space Mono", ui-monospace, monospace;
+}
+
+/* Puente para el CSS portado del prototipo (usa --display / --text / --mono). */
+:root {
+  --display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --text: var(--font-eb), "EB Garamond", Georgia, serif;
+  --mono: var(--font-space), "Space Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #eceae3; color: var(--ink); font-family: var(--text); font-size: 15px; }
+.mono { font-family: var(--mono); }
+a { color: var(--blue); }
+button { font-family: var(--mono); cursor: pointer; }
+:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- controles base ---------- */
+.btn { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding: 10px 18px; border: 0; border-radius: 4px; background: var(--blue); color: #fff; }
+.btn:hover { background: #5b8a8e; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.sm { padding: 6px 12px; font-size: 11px; }
+.btn:disabled { opacity: .55; cursor: default; }
+input, select, textarea { font-family: var(--text); font-size: 14px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); width: 100%; }
+label { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--warm); display: block; margin-bottom: 5px; }
+.field { margin-bottom: 14px; }
+.err { color: #a1483c; font-size: 12px; margin-top: 8px; min-height: 16px; }
+
+/* ---------- login ---------- */
+.login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--blue); padding: 20px; }
+.login .card { background: var(--shell); border-radius: 8px; padding: 40px 36px; width: 360px; box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+.login .wm { text-align: center; margin: 0 auto 4px; display: block; }
+.login .sub { text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--warm); margin: 14px 0 26px; }
+
+/* ---------- app shell ---------- */
+header.top { background: var(--ink); color: var(--shell); display: flex; align-items: center; gap: 22px; padding: 0 24px; height: 56px; position: sticky; top: 0; z-index: 40; }
+header.top .wm { height: 20px; width: auto; filter: brightness(0) invert(1); opacity: .95; }
+nav.top { display: flex; gap: 4px; margin-left: 8px; }
+nav.top a { background: transparent; border: 0; color: #cfcabf; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 8px 14px; border-radius: 4px; text-decoration: none; font-family: var(--mono); }
+nav.top a.active { background: var(--blue); color: #fff; }
+header.top .spacer { flex: 1; }
+header.top .who { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; color: #cfcabf; }
+main { max-width: 1080px; margin: 0 auto; padding: 26px 22px 80px; }
+h1.view { font-family: var(--display); font-weight: 500; font-size: 32px; margin: 0 0 4px; }
+.lead { color: #6a655c; margin: 0 0 22px; }
+
+/* ---------- tablas / listas ---------- */
+.panel { background: var(--shell); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+table.data { width: 100%; border-collapse: collapse; background: var(--shell); border-radius: 8px; overflow: hidden; }
+table.data th { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--warm); text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); }
+table.data td { padding: 11px 12px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.tag { font-family: var(--mono); font-size: 9px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; background: var(--mist); color: #3c525c; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px; }
+
+/* ---------- modal ---------- */
+.overlay { position: fixed; inset: 0; background: rgba(20,18,16,.5); display: flex; align-items: center; justify-content: center; z-index: 60; padding: 20px; }
+.modal { background: var(--shell); border-radius: 8px; padding: 26px; width: 440px; max-height: 90vh; overflow: auto; }
+
+/* ===================== COTIZADOR (documento) ===================== */
+.cot-controls { background: var(--ink); color: var(--shell); border-radius: 8px; padding: 16px; display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; margin-bottom: 20px; }
+.cot-controls .field { margin: 0; }
+.cot-controls label { color: var(--mist); }
+.cot-controls select, .cot-controls input { min-width: 150px; }
+.docwrap { background: #dcd8cf; padding: 20px; border-radius: 8px; }
+.sheet { width: 8.5in; min-height: 11in; background: var(--shell); margin: 0 auto 18px; padding: .7in .72in; position: relative; box-shadow: 0 6px 22px rgba(0,0,0,.16); display: flex; flex-direction: column; transform-origin: top center; overflow: hidden; }
+.kick { font-family: var(--mono); font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--blue); }
+.kick.warm { color: var(--warm); }
+h2.title { font-family: var(--display); font-weight: 500; font-size: 40px; line-height: 1.02; margin: .18in 0 .1in; }
+.sheet p { font-size: 12.5px; line-height: 1.55; color: #38352f; }
+.foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 8px; letter-spacing: .16em; text-transform: uppercase; color: var(--warm); display: flex; justify-content: space-between; }
+.wordmark { font-family: var(--display); font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+.cover { color: var(--shell); justify-content: center; align-items: center; text-align: center; }
+.cover.plain { background: var(--blue); }
+.cover .cover-logo { width: 3.1in; height: auto; filter: brightness(0) invert(1); }
+.cover .title { color: #fff; font-size: 52px; margin: .4in 0 .12in; }
+.cover .sub { color: #eef4f2; font-size: 16px; font-family: var(--text); }
+/* portada a sangre (full-bleed render + velo + logo) */
+.cover.bleed { padding: 0; justify-content: flex-start; }
+.cover.bleed .bleed-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cover.bleed .veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,32,36,.34) 0%, rgba(20,32,36,.12) 42%, rgba(20,32,36,.62) 100%); }
+.cover.bleed .cover-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; height: 100%; padding: .9in .72in; }
+.cover.bleed .cover-bottom { margin-top: auto; }
+.metaline { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #dfeae8; margin-top: .5in; }
+.card2 { background: var(--sand); border-radius: 5px; padding: 16px 18px; margin: 10px 0; }
+.row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,.08); }
+.row:last-child { border-bottom: 0; }
+.row .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #6a655c; }
+.row .val { font-family: var(--display); font-size: 22px; }
+.big { font-family: var(--display); font-size: 34px; }
+.sheet table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+.sheet th, .sheet td { text-align: right; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.sheet th:first-child, .sheet td:first-child, .sheet td.l, .sheet th.l { text-align: left; }
+.sheet th { font-family: var(--mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--warm); font-weight: 400; }
+.amort td { padding: 2.4px 6px; font-size: 9.3px; }
+.amort tr.gray td { color: #b3ada2; }
+.amort tr.tot td { font-family: var(--display); font-size: 12px; border-top: 2px solid var(--ink); border-bottom: 0; padding-top: 6px; }
+.small { font-size: 9px; color: var(--warm); line-height: 1.5; }
+.imgph { background: linear-gradient(135deg, var(--mist), var(--warm)); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; text-align: center; padding: 10px; overflow: hidden; }
+.imgph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.imgph.todo { background: repeating-linear-gradient(45deg, var(--mist), var(--mist) 10px, #d3ddea 10px, #d3ddea 20px); color: #40555f; }
+.board { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-top: 8px; }
+.cell { border: 1px solid var(--line); border-radius: 3px; padding: 7px 2px; text-align: center; font-family: var(--mono); font-size: 8.5px; color: #6a655c; background: #fff; }
+.cell.sel { background: var(--blue); color: #fff; border-color: var(--blue); font-weight: 700; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ---------- toast ---------- */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--shell); padding: 12px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; z-index: 80; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+
+/* ---------- print: 1 lámina = 1 hoja carta ---------- */
+@media print {
+  body * { visibility: hidden; }
+  .docwrap, .docwrap * { visibility: visible; }
+  .docwrap { position: absolute; left: 0; top: 0; padding: 0; background: #fff; }
+  .sheet { box-shadow: none; margin: 0; width: 100%; min-height: 100vh; page-break-after: always; }
+}
+@page { size: letter; margin: 0; }
