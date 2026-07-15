@@ -36,5 +36,6 @@ export const SQFT_POR_M2 = 10.7639104;
 // ---- formateadores ----
 export const fmt = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
 export const num = (n: number) => Math.round(n).toLocaleString("en-US");
-// Millones con 1 decimal: 662652 -> "0.7M"
-export const millones = (n: number) => (n / 1_000_000).toFixed(1) + "M";
+// Millones con 2 decimales para que utilidad/inversión conserven el margen
+// (evita "$1.2M sobre $1.2M" que se leería 100% en vez de 106%).
+export const millones = (n: number) => (n / 1_000_000).toFixed(2) + "M";

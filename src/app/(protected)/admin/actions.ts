@@ -89,10 +89,15 @@ export async function guardarUnidad(_prev: AdminResult, formData: FormData): Pro
   const row = {
     clave,
     etiqueta: s(formData.get("etiqueta")) ?? clave,
+    modelo: s(formData.get("modelo")),
+    piso: intOrNull(formData.get("piso")),
+    disponibilidad: s(formData.get("disponibilidad")) ?? "disponible",
     recamaras: s(formData.get("recamaras")),
     banos: s(formData.get("banos")),
     m2_interior: numOrNull(formData.get("m2_interior")),
     m2_terraza: numOrNull(formData.get("m2_terraza")),
+    m2_ph: numOrNull(formData.get("m2_ph")) ?? 0,
+    m2_jardin: numOrNull(formData.get("m2_jardin")) ?? 0,
     m2_bodega: numOrNull(formData.get("m2_bodega")),
     m2_total: numOrNull(formData.get("m2_total")),
     sqft_total: numOrNull(formData.get("sqft_total")),
@@ -100,6 +105,9 @@ export async function guardarUnidad(_prev: AdminResult, formData: FormData): Pro
     activa: formData.get("activa") === "on",
   };
   if (row.m2_total == null) return { ok: false, msg: "m² total es obligatorio." };
+  if (!["disponible", "apartada", "vendida"].includes(row.disponibilidad)) {
+    return { ok: false, msg: "Disponibilidad inválida." };
+  }
 
   const { error } = await supabase.from("unidades").upsert(row, { onConflict: "clave" });
   if (error) return { ok: false, msg: error.message };

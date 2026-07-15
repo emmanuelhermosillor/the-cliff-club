@@ -122,14 +122,131 @@ h2.title { font-family: var(--display); font-weight: 500; font-size: 40px; line-
 .cell.sel { background: var(--blue); color: #fff; border-color: var(--blue); font-weight: 700; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
+/* ---------- resumen en vivo + barra de generar ---------- */
+.resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 26px; background: var(--shell); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; margin-bottom: 14px; }
+.rz { display: flex; flex-direction: column; gap: 2px; }
+.rzl { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--warm); }
+.rzv { font-family: var(--display); font-size: 18px; color: var(--ink); }
+.rzv.big { font-size: 26px; color: var(--blue); }
+.genbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 20px; }
+
 /* ---------- toast ---------- */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--shell); padding: 12px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; z-index: 80; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+
+/* ===================== DOCUMENTO v3 (diseño Propuesta de inversión) ===================== */
+:root {
+  --ink-blue: #33565B;   /* titulares serif */
+  --card-blue: #E3ECF0;  /* Coastal Mist claro */
+  --card-tan: #EAE3D6;   /* Desert Sand claro */
+  --hl: #EBE4D6;         /* resaltado de valores dinámicos */
+}
+.doc { }
+.page {
+  width: 8.5in; min-height: 11in; background: var(--shell); color: var(--ink);
+  margin: 0 auto 18px; padding: .72in .78in .6in; position: relative;
+  box-shadow: 0 6px 22px rgba(0,0,0,.16); display: flex; flex-direction: column; overflow: hidden;
+  font-family: var(--text);
+}
+.hl { background: var(--hl); border-radius: 4px; padding: 0 .12em; }
+.khead { font-family: var(--mono); font-size: 10.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--blue); }
+.hair { border-bottom: 1px solid var(--line); margin: 12px 0 22px; }
+.dtitle { font-family: var(--display); font-weight: 500; color: var(--ink-blue); font-size: 40px; line-height: 1.05; margin: 6px 0 0; }
+.dtitle.sm { font-size: 30px; }
+.dsub { font-family: var(--display); font-style: italic; font-size: 18px; color: #5c584f; margin-top: 6px; }
+.lead2 { font-size: 13px; line-height: 1.6; color: #38352f; }
+.dfoot { margin-top: auto; padding-top: 14px; font-family: var(--mono); font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: var(--warm); }
+.note { font-family: var(--mono); font-size: 8.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--warm); }
+.imgwide { width: 100%; border-radius: 12px; overflow: hidden; }
+.imgwide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* portada a sangre */
+.page.bleed { padding: 0; }
+.page.bleed .bimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.page.bleed .bveil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(30,38,40,.28) 0%, rgba(30,38,40,.05) 40%, rgba(30,38,40,.30) 100%); }
+.page.bleed .binner { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; padding: .8in .78in; color: #fff; }
+.cover-logo { height: 62px; filter: brightness(0) invert(1); }
+.cover-cabos { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #eef4f2; margin-top: 12px; }
+.cover-bottom { margin-top: auto; }
+.cover-kick { font-family: var(--mono); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: #eef4f2; }
+.cover-etapa { font-family: var(--display); font-size: 58px; line-height: 1; color: #fff; margin: 10px 0 6px; }
+.cover-tag { font-family: var(--display); font-style: italic; font-size: 20px; color: #f0efe9; }
+.cover-meta { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,.4); margin-top: 26px; padding-top: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #eef4f2; }
+
+/* contraportada azul */
+.page.blue { background: var(--blue); color: #fff; align-items: center; justify-content: center; text-align: center; }
+.page.blue .mono-mark { width: 46px; height: auto; filter: brightness(0) invert(1); opacity: .95; margin-bottom: 26px; }
+.page.blue .wm { height: 44px; filter: brightness(0) invert(1); }
+.page.blue .aob { font-family: var(--display); font-style: italic; font-size: 30px; margin: 26px 0 18px; }
+.page.blue .cabos { font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: #eaf1f0; }
+.page.blue .bline { width: 180px; border-top: 1px solid rgba(255,255,255,.5); margin: 22px 0; }
+
+/* stat cards */
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 4px 0 24px; }
+.stat { border-radius: 12px; padding: 16px 18px; min-height: 92px; display: flex; flex-direction: column; justify-content: space-between; }
+.stat.blue { background: var(--card-blue); }
+.stat.tan { background: var(--card-tan); }
+.stat .lbl { font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: #5f6f74; }
+.stat .val { font-family: var(--display); font-size: 24px; color: var(--ink-blue); line-height: 1.05; }
+
+/* key-value */
+.colhead { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.kv { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--line); gap: 12px; }
+.kv:last-child { border-bottom: 0; }
+.kv .k { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #6a655c; }
+.kv .k small { display: block; text-transform: none; letter-spacing: 0; color: var(--warm); font-size: 9px; }
+.kv .val { font-size: 13px; color: var(--ink); }
+.kv.tot .k, .kv.tot .val { font-family: var(--display); font-size: 17px; color: var(--ink-blue); }
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+
+/* tabla amortización */
+.amort2 { width: 100%; border-collapse: collapse; font-size: 10px; }
+.amort2 th { font-family: var(--mono); font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--warm); font-weight: 400; text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+.amort2 th.r, .amort2 td.r { text-align: right; }
+.amort2 td { padding: 7px 4px; border-bottom: 1px solid var(--line); color: #46433d; }
+.amort2 td.mes, .amort2 td.n { color: var(--warm); font-family: var(--mono); font-size: 9px; }
+.amort2 tr.gray td { color: #b8b2a7; }
+.amort-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.amort-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 2px solid var(--ink-blue); margin-top: 12px; padding-top: 10px; }
+.amort-total .k { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.amort-total .v { font-family: var(--display); font-size: 18px; color: var(--ink-blue); }
+
+/* tablero real */
+.board2 { display: flex; flex-direction: column; gap: 6px; }
+.brow { display: flex; gap: 6px; }
+.bcell { flex: 1; border-radius: 5px; padding: 8px 2px; text-align: center; font-family: var(--mono); font-size: 9px; border: 1px solid var(--line); background: #fff; color: #6a655c; }
+.bcell.apartada { background: var(--card-tan); border-color: var(--sand); color: #6a5f4c; }
+.bcell.vendida { background: #4c5658; border-color: #4c5658; color: #dfe3e0; }
+.bcell.sel { outline: 2px solid var(--blue); outline-offset: 1px; font-weight: 700; color: var(--ink-blue); }
+.blegend { display: flex; gap: 16px; margin-top: 10px; font-family: var(--mono); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; color: var(--warm); }
+.blegend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+.blegend i.d { border: 1px solid var(--line); background: #fff; }
+.blegend i.a { background: var(--card-tan); }
+.blegend i.v { background: #4c5658; }
+
+/* imagen/upload placeholder */
+.uploadbox { border: 1px dashed var(--piedra); border-radius: 10px; min-height: 1.9in; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #8a8479; background: #efece5; font-family: var(--mono); font-size: 10px; letter-spacing: .04em; padding: 12px; }
+.uploadbox b { font-family: var(--text); font-size: 13px; letter-spacing: 0; color: #6a655c; text-transform: none; }
+
+/* firma */
+.signrow { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 8px; }
+.signcol .sigline { border-top: 1px solid var(--ink); padding-top: 8px; }
+.signcol .role { font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--warm); }
+.signcol .who { font-family: var(--display); font-size: 15px; color: var(--ink); margin-top: 2px; }
+.signcol .date { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--warm); margin-top: 10px; }
+
+/* card acuerdos */
+.acard { border-radius: 12px; padding: 20px 22px; }
+.acard.blue { background: var(--card-blue); }
+.acard.tan { background: var(--card-tan); }
+.acard .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #5f6f74; }
+.acard .big { font-family: var(--display); font-size: 24px; color: var(--ink-blue); margin: 8px 0 6px; }
+.acard p { font-size: 12px; line-height: 1.5; margin: 0; color: #46433d; }
 
 /* ---------- print: 1 lámina = 1 hoja carta ---------- */
 @media print {
   body * { visibility: hidden; }
-  .docwrap, .docwrap * { visibility: visible; }
-  .docwrap { position: absolute; left: 0; top: 0; padding: 0; background: #fff; }
-  .sheet { box-shadow: none; margin: 0; width: 100%; min-height: 100vh; page-break-after: always; }
+  .printdoc, .printdoc * { visibility: visible; }
+  .printdoc { position: absolute; left: 0; top: 0; padding: 0; background: #fff; }
+  .sheet, .page { box-shadow: none; margin: 0; width: 100%; min-height: 100vh; page-break-after: always; }
 }
 @page { size: letter; margin: 0; }

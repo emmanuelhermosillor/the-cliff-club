@@ -1,12 +1,17 @@
 "use server";
 
-import { buildProposal } from "@/server/catalogo";
-import type { ProposalModel, UnidadInput } from "@/lib/catalogos";
+import { buildProposal, buildAnexo } from "@/server/catalogo";
+import type { ProposalModel, AnexoModel, UnidadInput } from "@/lib/catalogos";
 import { createClient } from "@/lib/supabase/server";
 
 // Recalcula la propuesta en el servidor (las cifras nunca se confían al cliente).
 export async function computeProposal(etapaClave: string, unidad: UnidadInput): Promise<ProposalModel> {
   return buildProposal(etapaClave, unidad);
+}
+
+// Genera el modelo del Anexo (análisis de inversión) en el servidor.
+export async function computeAnexo(etapaClave: string, unidad: UnidadInput, fecha: string): Promise<AnexoModel> {
+  return buildAnexo(etapaClave, unidad, fecha);
 }
 
 export type GuardarResult = { ok: boolean; folio?: number; error?: string };

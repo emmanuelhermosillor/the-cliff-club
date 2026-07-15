@@ -69,8 +69,22 @@ Placeholders con `TODO` (pendientes de Gerardo):
   no inventar): Collector Access, Residence Access, Alliance Circle, Preview Circle. Se activan
   desde `/admin` cuando estén sus datos.
 
+## Documento e inventario (v3)
+- **Diseño nuevo** (`Documento.tsx`) reproduce `reference/propuesta_inversion.pdf` — 10 páginas:
+  portada, confidencialidad (verbatim), introducción, la oportunidad, propuesta de venta,
+  amortización (Nº secuencial, fechas MMM AA), descripción con **tablero real**, acuerdos,
+  términos (verbatim), contraportada. Los % de enganche/intermedios/contra son dinámicos por etapa.
+- **Anexo** (`Anexo.tsx` + `buildAnexo`) reproduce `reference/anexo_modelo.pdf` — análisis de
+  inversión: competitive set, valor de entrada, compra-venta, renta (ADR $450), compuesta, flujo,
+  indicadores (TIR) y conclusión. Modelo verificado (plusvalía 8%/5 años, comisión 6%). Founders
+  Reserve sale en `proyeccion`, marcado "sujeto a confirmación". `ADR por tipología` = TODO.
+- **Inventario real Torre B** (`unidades`, migración 0002): 28 unidades con `piso`/`disponibilidad`/
+  `modelo`. El cotizador solo cotiza `disponible` (24); el tablero muestra todas por piso, coloreadas.
+- **UX**: el cotizador es un formulario con resumen en vivo; el documento y el Anexo solo se
+  muestran al pulsar Generar. Descargar PDF imprime el documento activo (print CSS).
+
 ## Pendientes
-- **Anexo** (companion que justifica el margen) — su modelo no viene en el handoff. Pendiente de
-  definir si se agrega como láminas extra del PDF o como segundo generador ligado a la cotización.
-- Assets: Master Plan con Torre B señalada y tablero de disponibilidad real (placeholders con TODO).
+- Assets subibles por admin: Master Plan y Master Plan con Torre B señalada (placeholders con TODO).
+- ADR por tipología en el Anexo (hoy fijo $450); TIR de CR/FR es estimada del flujo anual.
+- Inventario en **BORRADOR**: confirmar B304 (cargada como 1 rec) y baños de PH/FG con Gerardo.
 - Fuentes licenciadas IvyOra/Söhne — ver `public/fonts/README.md`.
