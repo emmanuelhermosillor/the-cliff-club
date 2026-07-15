@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { ETAPA_NOMBRE, TIPO_NOMBRE, type EtapaKey, type TipoKey } from "@/lib/catalogos";
 
 type Cotizacion = {
   id: string;
@@ -9,6 +8,7 @@ type Cotizacion = {
   valor_total: number | null;
   estado: string;
   created_at: string;
+  datos: { etapa?: string; tipologia?: string; unidad?: string } | null;
   prospectos: { nombre: string } | null;
 };
 
@@ -18,7 +18,7 @@ export default async function CotizacionesPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("cotizaciones")
-    .select("id, folio, etapa, tipologia, valor_total, estado, created_at, prospectos(nombre)")
+    .select("id, folio, etapa, tipologia, valor_total, estado, created_at, datos, prospectos(nombre)")
     .order("created_at", { ascending: false });
 
   const rows = (data as unknown as Cotizacion[] | null) ?? [];
@@ -31,7 +31,7 @@ export default async function CotizacionesPage() {
       </p>
       <table className="data">
         <thead>
-          <tr><th>Folio</th><th>Prospecto</th><th>Etapa / tipología</th><th>Valor</th><th>Estado</th><th>Fecha</th></tr>
+          <tr><th>Folio</th><th>Prospecto</th><th>Etapa / unidad</th><th>Valor</th><th>Estado</th><th>Fecha</th></tr>
         </thead>
         <tbody>
           {rows.length === 0 ? (
@@ -46,7 +46,7 @@ export default async function CotizacionesPage() {
                 <td className="mono">#{c.folio}</td>
                 <td><b>{c.prospectos?.nombre || "—"}</b></td>
                 <td>
-                  {ETAPA_NOMBRE[c.etapa as EtapaKey] || c.etapa} · {TIPO_NOMBRE[c.tipologia as TipoKey] || c.tipologia}
+                  {(c.datos?.etapa || c.etapa)} · {(c.datos?.unidad || c.datos?.tipologia || c.tipologia)}
                 </td>
                 <td>{money(c.valor_total)}</td>
                 <td><span className="tag">{c.estado}</span></td>

@@ -1,13 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import type { ProposalModel } from "@/lib/catalogos";
 
-const PLANOS: Record<string, string> = {
-  "1": "/renders/plano_1rec.jpeg",
-  "2": "/renders/plano_2rec.jpeg",
-  "3": "/renders/plano_3rec.jpg",
-  "4": "/renders/plano_4rec.jpg",
-};
-
 export function Documento({
   model,
   cliente,
@@ -135,7 +128,7 @@ export function Documento({
           <div className="card2" style={{ background: "var(--mist)" }}>
             <div className="kick warm" style={{ marginBottom: "6px" }}>Condiciones de pago</div>
             <div className="row"><span className="lbl">Enganche · {model.engPct}</span><span>{model.engTot}</span></div>
-            <div className="row"><span className="lbl">Intermedios · 55% (24m)</span><span>{model.men}/mes</span></div>
+            <div className="row"><span className="lbl">Intermedios · {model.intermediosPct} ({model.intermediosMeses}m)</span><span>{model.men}/mes</span></div>
             <div className="row"><span className="lbl">Contra entrega · {model.contraPct}</span><span>{model.contraMonto}</span></div>
             <div className="row"><span className="lbl">Total</span><span className="val">{model.tot}</span></div>
             <p className="small" style={{ marginTop: "6px" }}>USD. Entrega estimada: junio 2029.</p>
@@ -202,7 +195,11 @@ export function Documento({
                 <tr><td className="l"><b>Área total</b></td><td><b>{model.areas.totM} m² · {model.areas.totS} sqft</b></td></tr>
               </tbody>
             </table>
-            <div className="imgph" style={{ minHeight: "2.4in" }}><img src={PLANOS[model.tKey]} alt={`Plano ${T.rec}`} /></div>
+            {model.planoSrc ? (
+              <div className="imgph" style={{ minHeight: "2.4in" }}><img src={model.planoSrc} alt={`Plano ${T.rec}`} /></div>
+            ) : (
+              <div className="imgph todo" style={{ minHeight: "2.4in" }}>[ Plano ambientado · {T.rec} — pendiente ]</div>
+            )}
           </div>
         </div>
         <p className="small" style={{ marginTop: "8px" }}>El desarrollador se reserva el derecho de ajustes menores en distribución y diseño, sin aviso. La unidad específica se confirma al manifestar interés, conforme al inventario disponible.</p>
@@ -242,7 +239,7 @@ export function Documento({
         <p className="small" style={{ fontSize: "9.5px", lineHeight: 1.65, marginTop: "10px" }}>
           El Vendedor es el desarrollador del Proyecto conocido como Adria Capital Proyecto B A001, S.A.P.I. de C.V. El Proyecto está ubicado en la Comunidad Turística Quivira (&ldquo;Quivira Los Cabos&rdquo;), contará con Régimen de Condominio y su Reglamento de Condóminos. La unidad privativa {T.u} será parte del señalado régimen condominal y se destinará exclusivamente a uso residencial.
           <br /><br />
-          Las Partes acuerdan que el precio total de adquisición será de Usd {model.tot} ({model.letra} con 00/100 dólares de los Estados Unidos de América). Una vez realizado el apartado, este tendrá una vigencia de 30 días naturales (&ldquo;Periodo de Reserva&rdquo;), durante el cual se definirán los términos que quedarán en el Contrato de Promesa de Compraventa. La presente Carta de Intención es en beneficio único del potencial comprador y sus derechos no podrán cederse a terceros.
+          Las Partes acuerdan que el precio total de adquisición será de Usd {model.tot} ({model.letra}{" "}con 00/100 dólares de los Estados Unidos de América). Una vez realizado el apartado, este tendrá una vigencia de 30 días naturales (&ldquo;Periodo de Reserva&rdquo;), durante el cual se definirán los términos que quedarán en el Contrato de Promesa de Compraventa. La presente Carta de Intención es en beneficio único del potencial comprador y sus derechos no podrán cederse a terceros.
           <br /><br />
           Habiendo leído, entendido y aceptado ambas partes los términos aquí establecidos, manifiestan su plena conformidad, obligándose a cumplirlos en todas sus partes.
         </p>

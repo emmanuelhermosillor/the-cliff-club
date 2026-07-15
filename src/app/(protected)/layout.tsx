@@ -18,13 +18,14 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     .maybeSingle();
 
   const nombre = profile?.nombre || user.email || "";
-  const rol = profile?.rol === "admin" ? "Admin" : "Asesor";
+  const isAdmin = profile?.rol === "admin";
+  const rol = isAdmin ? "Admin" : "Asesor";
 
   return (
     <>
       <header className="top">
         <img className="wm" src="/brand/logo_wordmark.png" alt="The Cliff Club" />
-        <Nav />
+        <Nav isAdmin={isAdmin} />
         <span className="spacer" />
         <span className="who">
           {nombre} · {rol}

@@ -1,21 +1,21 @@
 "use server";
 
-import { buildProposal } from "@/server/matriz";
-import type { EtapaKey, TipoKey, ProposalModel } from "@/lib/catalogos";
+import { buildProposal } from "@/server/catalogo";
+import type { ProposalModel, UnidadInput } from "@/lib/catalogos";
 import { createClient } from "@/lib/supabase/server";
 
 // Recalcula la propuesta en el servidor (las cifras nunca se confían al cliente).
-export async function computeProposal(eKey: EtapaKey, tKey: TipoKey): Promise<ProposalModel> {
-  return buildProposal(eKey, tKey);
+export async function computeProposal(etapaClave: string, unidad: UnidadInput): Promise<ProposalModel> {
+  return buildProposal(etapaClave, unidad);
 }
 
 export type GuardarResult = { ok: boolean; folio?: number; error?: string };
 
-// Guarda en CRM: busca/crea el prospecto por nombre e inserta la cotización
-// con un snapshot en `datos`. RLS asegura que cada asesor solo toca lo suyo.
+// Guarda en CRM: busca/crea el prospecto por nombre e inserta la cotización con
+// un snapshot inmutable en `datos`. RLS asegura que cada asesor solo toca lo suyo.
 export async function guardarCotizacion(
-  eKey: EtapaKey,
-  tKey: TipoKey,
+  etapaClave: string,
+  unidad: UnidadInput,
   cliente: string,
   fecha: string,
 ): Promise<GuardarResult> {
@@ -32,9 +32,9 @@ export async function guardarCotizacion(
 
   let model: ProposalModel;
   try {
-    model = buildProposal(eKey, tKey);
+    model = await buildProposal(etapaClave, unidad);
   } catch {
-    return { ok: false, error: "Etapa o tipología no válida." };
+    return { ok: false, error: "Etapa o unidad no válida." };
   }
 
   // Buscar prospecto por nombre (RLS lo limita al asesor) o crearlo.
@@ -62,8 +62,8 @@ export async function guardarCotizacion(
     .from("cotizaciones")
     .insert({
       prospecto_id: prospectoId,
-      etapa: eKey,
-      tipologia: tKey,
+      etapa: model.etapaClave,
+      tipologia: model.unidadClave,
       unidad: model.snapshot.unidad,
       valor_total: model.snapshot.valor_total,
       precio_m2: model.snapshot.precio_m2,

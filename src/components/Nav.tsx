@@ -9,11 +9,12 @@ const ITEMS = [
   { href: "/cotizaciones", label: "Cotizaciones" },
 ];
 
-export function Nav() {
+export function Nav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
+  const items = isAdmin ? [...ITEMS, { href: "/admin", label: "Admin" }] : ITEMS;
   return (
     <nav className="top">
-      {ITEMS.map((it) => (
+      {items.map((it) => (
         <Link key={it.href} href={it.href} className={pathname.startsWith(it.href) ? "active" : ""}>
           {it.label}
         </Link>

@@ -11,14 +11,25 @@ Next.js 16 (App Router, TS) + Supabase (`@supabase/ssr`). Confidencial.
 - **Tailwind v4** (CSS-first) + `next/font`, siguiendo las convenciones de `~/Developer/ruella`.
 
 ## Arquitectura
-- `src/server/matriz.ts` — **server-only**. Matriz de datos (etapas, tipologías, valores,
-  amortización) y datos bancarios. Cifras verbatim del prototipo; no se inventan.
-  La propuesta se calcula en el servidor (Server Action `computeProposal`) y solo el modelo
-  de la combinación elegida viaja al cliente — la matriz completa nunca entra al bundle.
-- `src/app/(protected)/` — vistas tras login: **Cotizador**, **Prospectos**, **Cotizaciones**.
+- **Catálogo editable en Supabase** — tablas `etapas` y `unidades` (RLS: lectura autenticada,
+  escritura solo `is_admin()`). Precios, descuentos, márgenes, fases de pago y m² se editan
+  desde `/admin` sin tocar código ni redeploy. Migración + seeds en `supabase/migrations/`.
+- `src/server/catalogo.ts` — **server-only**. Lee el catálogo y **calcula** la propuesta
+  (valor total, mensualidad, utilidad, importe en letra) a partir de los inputs; no guarda cifras
+  derivadas. Solo el modelo de la combinación elegida viaja al cliente vía Server Action
+  `computeProposal` — el catálogo completo (otras etapas, márgenes, banco) nunca entra al bundle.
+- `src/server/matriz.ts` — **server-only**. Datos que no se editan desde el panel: calendario de
+  amortización, datos bancarios, formateadores.
+- `src/lib/numero.ts` — `numeroALetras()` (importe en letra), validado contra los totales verificados.
+- `src/app/(protected)/` — vistas tras login: **Cotizador** (con modo *unidad libre* / m² manual),
+  **Prospectos**, **Cotizaciones**, **Admin** (solo rol admin).
 - `src/proxy.ts` — protege todas las rutas; sin sesión → `/login`.
 - `src/app/api/admin/create-user` — alta de usuarios con `service_role` (server-only, gated a admin).
-  Preparada, **no** enlazada en la UI (README §6 del handoff).
+  Preparada, **no** enlazada en la UI (README §6 del handoff original).
+
+### Inmutabilidad de cotizaciones
+Cada cotización guarda en `datos` (jsonb) un **snapshot** de las cifras usadas. Editar precios en
+`/admin` afecta a las **nuevas** cotizaciones; las ya guardadas conservan su snapshot.
 
 ## Setup local
 ```bash
@@ -50,8 +61,16 @@ Placeholders con `TODO` (pendientes de Gerardo):
 - **Tablero de disponibilidad real** (hoy es ilustrativo).
 - Fuentes licenciadas IvyOra/Söhne — ver `public/fonts/README.md`.
 
-## Pendientes de datos (no inventar)
-- **Founders Reserve (etapa 1)** — deshabilitada en el selector hasta recibir su matriz y
-  margen (el enganche es a 5 fases; la amortización actual asume 4). No se activa con números inventados.
+## Etapas del catálogo
+- **Activas** (datos verificados): Founders Reserve (35% · $5,525/m² · enganche 50% en 5 fases ·
+  margen 122% en estado `proyeccion`, pendiente de que Gerardo/Adrián lo confirmen), Founders Access
+  (30% · $5,950 · margen 106%), Collectors Reserve (25% · $6,375 · margen 92%).
+- **Inactivas** (no seleccionables; estructura de pago y margen **por confirmar** con Gerardo —
+  no inventar): Collector Access, Residence Access, Alliance Circle, Preview Circle. Se activan
+  desde `/admin` cuando estén sus datos.
+
+## Pendientes
 - **Anexo** (companion que justifica el margen) — su modelo no viene en el handoff. Pendiente de
   definir si se agrega como láminas extra del PDF o como segundo generador ligado a la cotización.
+- Assets: Master Plan con Torre B señalada y tablero de disponibilidad real (placeholders con TODO).
+- Fuentes licenciadas IvyOra/Söhne — ver `public/fonts/README.md`.
