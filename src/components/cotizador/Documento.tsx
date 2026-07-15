@@ -77,7 +77,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           Por medio del presente documento, nos permitimos poner a su consideración una propuesta de adquisición dentro de The Cliff Club Residences at Quivira, un desarrollo residencial privado ubicado en Cabo San Lucas, Baja California Sur, dentro de uno de los enclaves más exclusivos del destino. Esta propuesta forma parte de una etapa privada de comercialización temprana, dirigida a un grupo selecto de compradores previo al lanzamiento del proyecto en mercado abierto.
         </p>
         <div className="imgwide" style={{ height: "2.3in", margin: "6px 0 18px" }}>
-          <img src="/renders/s03_introduccion.png" alt="The Cliff Club Residences" />
+          <img src="/renders/fachada_dia.jpg" alt="The Cliff Club Residences · fachada" />
         </div>
         <div className="colhead">Proyecto &amp; Grupo Desarrollador</div>
         <p className="lead2" style={{ marginTop: 4 }}>
@@ -118,9 +118,9 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           <p className="lead2" style={{ margin: "6px 0 0" }}>Disponibilidad de esta etapa · <b>{model.unidadesDisponibles}</b> residencias.</p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, margin: "18px 0" }}>
-          <div className="imgwide" style={{ height: "1.7in" }}><img src="/renders/s04_oportunidad_a.jpeg" alt="Amenidad" /></div>
-          <div className="imgwide" style={{ height: "1.7in" }}><img src="/renders/s04_oportunidad_b.png" alt="Amenidad" /></div>
-          <div className="imgwide" style={{ height: "1.7in" }}><img src="/renders/s04_oportunidad_c.jpeg" alt="Amenidad" /></div>
+          <div className="imgwide" style={{ height: "1.7in" }}><img src="/renders/amenidad_alberca.jpg" alt="Alberca principal" /></div>
+          <div className="imgwide" style={{ height: "1.7in" }}><img src="/renders/amenidad_oasis.jpg" alt="Oasis · spa" /></div>
+          <div className="imgwide" style={{ height: "1.7in" }}><img src="/renders/amenidad_gimnasio.jpg" alt="Gimnasio" /></div>
         </div>
         <div style={{ marginTop: "auto", display: "grid", gridTemplateColumns: "1fr 2fr", gap: 12 }}>
           <div className="stat" style={{ background: "#efece5" }}>
@@ -207,10 +207,9 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           <div>
             <div className="colhead">01 · Ubicación en el proyecto</div>
             <div className="imgwide" style={{ height: "2in", marginBottom: 8, position: "relative" }}>
-              <img src="/renders/masterplan_desarrollo.jpg" alt="Master Plan · The Cliff Club" />
-              <span className="mp-badge">Torre {model.torre} · ubicación aprox.</span>
+              <img src="/renders/masterplan.jpg" alt="Master Plan de Quivira" />
             </div>
-            <p className="note">Master Plan de Quivira · ubicación de Torre {model.torre} aproximada. TODO: sustituir por la versión con Torre {model.torre} resaltada (Gerardo).</p>
+            <p className="note">Master Plan de Quivira · ubicación del proyecto.</p>
           </div>
           <div>
             <div className="colhead">02 · Piso y disponibilidad — Torre {model.torre}</div>
