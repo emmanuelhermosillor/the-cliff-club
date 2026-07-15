@@ -38,7 +38,11 @@ export default async function FichaProspecto({ params }: { params: Promise<{ id:
     <>
       <p className="lead" style={{ marginBottom: 6 }}><Link href="/prospectos">← Prospectos</Link></p>
       <h1 className="view">{p.nombre} <span className="tag" style={{ verticalAlign: "middle" }}>{ESTADOS_PROSPECTO[p.estado] ?? p.estado}</span></h1>
-      <p className="lead">{p.email || "sin correo"} · {p.telefono || "sin teléfono"} · {p.origen || "sin origen"}</p>
+      <p className="lead">
+        {p.email || "sin correo"} · {p.telefono || "sin teléfono"} · {p.origen || "sin origen"}
+        {"  "}
+        <Link className="btn sm" style={{ marginLeft: 10 }} href={`/cotizador?cliente=${encodeURIComponent(p.nombre)}&correo=${encodeURIComponent(p.email ?? "")}&telefono=${encodeURIComponent(p.telefono ?? "")}&origen=${encodeURIComponent(p.origen ?? "")}`}>+ Nueva cotización</Link>
+      </p>
 
       <ProspectoEditor p={p as ProspectoData} />
 

@@ -116,3 +116,25 @@ export async function guardarUnidad(_prev: AdminResult, formData: FormData): Pro
   revalidatePath("/cotizador");
   return { ok: true, msg: `Unidad ${clave} guardada.` };
 }
+
+// Supuestos del Anexo (config_anexo, singleton id=1). Los % se capturan como fracción (0.08).
+export async function guardarSupuestos(_prev: AdminResult, formData: FormData): Promise<AdminResult> {
+  const gate = await requireAdmin();
+  if (!gate.ok) return { ok: false, msg: gate.msg };
+  const { supabase } = gate;
+
+  const patch = {
+    plusvalia_anual: numOrNull(formData.get("plusvalia_anual")),
+    plazo_anios: intOrNull(formData.get("plazo_anios")),
+    adr: numOrNull(formData.get("adr")),
+    ocupacion: numOrNull(formData.get("ocupacion")),
+    comision: numOrNull(formData.get("comision")),
+    fee_renta: numOrNull(formData.get("fee_renta")),
+    mantenimiento: numOrNull(formData.get("mantenimiento")),
+  };
+  const { error } = await supabase.from("config_anexo").update(patch).eq("id", 1);
+  if (error) return { ok: false, msg: error.message };
+
+  revalidatePath("/admin");
+  return { ok: true, msg: "Supuestos del Anexo guardados." };
+}

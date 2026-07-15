@@ -1,17 +1,17 @@
 "use server";
 
 import { buildProposal, buildAnexo } from "@/server/catalogo";
-import type { ProposalModel, AnexoModel, UnidadInput } from "@/lib/catalogos";
+import type { ProposalModel, AnexoModel, UnidadInput, PlanOverride, SupuestosAnexo } from "@/lib/catalogos";
 import { createClient } from "@/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Recalcula la propuesta en el servidor (las cifras nunca se confían al cliente).
-export async function computeProposal(etapaClave: string, unidad: UnidadInput): Promise<ProposalModel> {
-  return buildProposal(etapaClave, unidad);
+export async function computeProposal(etapaClave: string, unidad: UnidadInput, plan?: PlanOverride): Promise<ProposalModel> {
+  return buildProposal(etapaClave, unidad, plan ? { plan } : undefined);
 }
 
-export async function computeAnexo(etapaClave: string, unidad: UnidadInput, fecha: string): Promise<AnexoModel> {
-  return buildAnexo(etapaClave, unidad, fecha);
+export async function computeAnexo(etapaClave: string, unidad: UnidadInput, fecha: string, supuestos?: SupuestosAnexo): Promise<AnexoModel> {
+  return buildAnexo(etapaClave, unidad, fecha, supuestos ? { supuestos } : undefined);
 }
 
 export type ProspectoInput = { cliente: string; correo?: string; telefono?: string; origen?: string };
@@ -43,6 +43,8 @@ export async function guardarCotizacion(
   unidad: UnidadInput,
   prospecto: ProspectoInput,
   fecha: string,
+  plan?: PlanOverride,
+  supuestos?: SupuestosAnexo,
 ): Promise<GuardarResult> {
   const nombre = (prospecto.cliente || "").trim();
   const correo = prospecto.correo?.trim() || undefined;
@@ -58,8 +60,8 @@ export async function guardarCotizacion(
 
   let model: ProposalModel, anexoModel: AnexoModel;
   try {
-    model = await buildProposal(etapaClave, unidad);
-    anexoModel = await buildAnexo(etapaClave, unidad, fecha || "");
+    model = await buildProposal(etapaClave, unidad, plan ? { plan } : undefined);
+    anexoModel = await buildAnexo(etapaClave, unidad, fecha || "", supuestos ? { supuestos } : undefined);
   } catch {
     return { ok: false, error: "Etapa o unidad no válida." };
   }

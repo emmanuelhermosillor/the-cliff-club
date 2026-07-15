@@ -5,7 +5,7 @@ import { numeroALetras } from "@/lib/numero";
 import { BANCO, FECHAS, SQFT_POR_M2, fmt, num, millones } from "./matriz";
 import type {
   EtapaOption, UnidadOption, CeldaTablero, ProposalModel, AmortRowView, Areas,
-  UnidadInput, AnexoModel, CompRow,
+  UnidadInput, AnexoModel, CompRow, PlanOverride, SupuestosAnexo,
 } from "@/lib/catalogos";
 
 // ---------- filas del catálogo ----------
@@ -31,6 +31,19 @@ type UnidadRow = {
 const n = (v: unknown): number => Number(v ?? 0);
 const pct = (v: number) => Math.round(v * 100) + "%";
 const CANAL_CONTACTO = "The Cliff Club Residences · Comercialización";
+
+// Asesor (usuario actual): nombre + contacto congelados en la propuesta (Parte E).
+export async function getAsesor(): Promise<{ nombre: string; contacto: string; puesto: string; telefono: string; email: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { nombre: "", contacto: "", puesto: "", telefono: "", email: "" };
+  const { data: p } = await supabase.from("profiles").select("nombre, telefono, puesto").eq("id", user.id).maybeSingle();
+  const nombre = (p?.nombre as string) || user.email || "";
+  const telefono = (p?.telefono as string) || "";
+  const email = user.email || "";
+  const contacto = [telefono, email].filter(Boolean).join(" · ");
+  return { nombre, contacto, puesto: (p?.puesto as string) || "", telefono, email };
+}
 
 // ---- fecha "dd/mm/yyyy" -> "Mmm YY" ----
 const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
@@ -61,7 +74,7 @@ export async function getUnidadesDisponibles(): Promise<UnidadOption[]> {
   }));
 }
 
-async function getInventario(): Promise<CeldaTablero[]> {
+export async function getInventario(): Promise<CeldaTablero[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("unidades")
     .select("clave, etiqueta, piso, disponibilidad, orden").order("orden");
@@ -110,7 +123,7 @@ function areaPair(m2: number | null): { m2: string; sqft: string } {
 }
 
 // ---------- construir PROPUESTA ----------
-export async function buildProposal(etapaClave: string, unidad: UnidadInput): Promise<ProposalModel> {
+export async function buildProposal(etapaClave: string, unidad: UnidadInput, opts?: { plan?: PlanOverride }): Promise<ProposalModel> {
   const E = await fetchEtapa(etapaClave);
   if (!E || !E.activa) throw new Error("Etapa no disponible");
   if (E.precio_entrada_m2 == null || E.intermedios_pct == null || E.contra_pct == null || !E.fases_enganche)
@@ -149,10 +162,41 @@ export async function buildProposal(etapaClave: string, unidad: UnidadInput): Pr
   const precioEntrada = n(E.precio_entrada_m2);
   const subtotal = Math.round(baseM2 * m2Total);
   const valor = Math.round(precioEntrada * m2Total);
-  const meses = E.intermedios_meses ?? 24;
-  const men = Math.round((valor * n(E.intermedios_pct)) / meses);
-  const rows = amortRows(E, valor, men);
-  const desde = E.intermedios_desde_idx ?? 8;
+
+  // Plan de pagos efectivo: base de la etapa, o personalizado por cotización (Parte B).
+  let enganchePctNum: number, intermediosPctNum: number, contraPctNum: number, mesesInter: number;
+  let desde: number, contraMesIdx: number, fasesEng: Fase[], graciaMeses: number[], planNombre: string;
+  if (opts?.plan) {
+    const po = opts.plan;
+    enganchePctNum = po.enganchePct;
+    contraPctNum = po.contraPct;
+    intermediosPctNum = Math.max(0, 1 - enganchePctNum - contraPctNum);
+    mesesInter = Math.max(1, Math.round(po.meses));
+    fasesEng = po.fases && po.fases.length ? po.fases : [{ c: "Enganche", pct: enganchePctNum, mes: 0 }];
+    graciaMeses = [];
+    desde = Math.max(0, ...fasesEng.map((f) => f.mes)) + 1;
+    contraMesIdx = Math.min(35, desde + mesesInter);
+    planNombre = "Personalizado";
+  } else {
+    enganchePctNum = E.enganche_pct != null ? n(E.enganche_pct) : (E.fases_enganche ?? []).reduce((a, f) => a + f.pct, 0);
+    contraPctNum = n(E.contra_pct);
+    intermediosPctNum = n(E.intermedios_pct);
+    mesesInter = E.intermedios_meses ?? 24;
+    fasesEng = E.fases_enganche ?? [];
+    graciaMeses = E.gracia_meses ?? [];
+    desde = E.intermedios_desde_idx ?? 8;
+    contraMesIdx = E.contra_mes_idx ?? 35;
+    planNombre = "Base";
+  }
+  const planEtapa: EtapaRow = {
+    ...E, enganche_pct: enganchePctNum, intermedios_pct: intermediosPctNum, contra_pct: contraPctNum,
+    intermedios_meses: mesesInter, intermedios_desde_idx: desde, contra_mes_idx: contraMesIdx,
+    fases_enganche: fasesEng, gracia_meses: graciaMeses,
+  };
+  const meses = mesesInter;
+  const men = Math.round((valor * intermediosPctNum) / meses);
+  const rows = amortRows(planEtapa, valor, men);
+  const asesor = await getAsesor();
 
   // Nº secuencial de pago (salta gracia/meses vacíos).
   let seq = 0;
@@ -171,8 +215,8 @@ export async function buildProposal(etapaClave: string, unidad: UnidadInput): Pr
     };
   });
 
-  const engancheTotal = (E.fases_enganche ?? []).reduce((a, f) => a + valor * f.pct, 0);
-  const intermediosTotal = valor * n(E.intermedios_pct);
+  const engancheTotal = fasesEng.reduce((a, f) => a + valor * f.pct, 0);
+  const intermediosTotal = valor * intermediosPctNum;
   const rangoIni = fechaCorta(FECHAS[desde] ?? "");
   const rangoFin = fechaCorta(FECHAS[Math.min(desde + meses - 1, 35)] ?? "");
   const margenNum = E.margen;
@@ -198,13 +242,13 @@ export async function buildProposal(etapaClave: string, unidad: UnidadInput): Pr
     valorTotal: fmt(valor),
     valorTotalRaw: valor,
     mensual: fmt(men),
-    enganchePct: E.enganche_pct != null ? pct(n(E.enganche_pct)) : pct((E.fases_enganche ?? []).reduce((a, f) => a + f.pct, 0)),
+    enganchePct: pct(enganchePctNum),
     engancheTotal: fmt(engancheTotal),
-    intermediosPct: pct(n(E.intermedios_pct)),
+    intermediosPct: pct(intermediosPctNum),
     intermediosTotal: fmt(intermediosTotal),
     intermediosRango: `${rangoIni} – ${rangoFin}`,
-    contraPct: pct(n(E.contra_pct)),
-    contraMonto: fmt(valor * n(E.contra_pct)),
+    contraPct: pct(contraPctNum),
+    contraMonto: fmt(valor * contraPctNum),
     utilidad: margenNum != null ? "$" + millones(utilidad) : "—",
     inversionInicial: "$" + millones(valor),
     valorEnLetra: numeroALetras(valor),
@@ -212,7 +256,9 @@ export async function buildProposal(etapaClave: string, unidad: UnidadInput): Pr
     banco: BANCO,
     tablero,
     planoSrc: planoDeRecamaras(recamaras),
-    canalContacto: CANAL_CONTACTO,
+    canalContacto: asesor.nombre ? `${asesor.nombre}${asesor.contacto ? " · " + asesor.contacto : ""}` : CANAL_CONTACTO,
+    asesor: { nombre: asesor.nombre, contacto: asesor.contacto, puesto: asesor.puesto },
+    planNombre,
     snapshot: {
       etapa: E.nombre, unidad: etiqueta, modelo,
       valor_total: valor, precio_m2: precioEntrada, descuento: n(E.descuento), margen: margenNum != null ? pct(n(margenNum)) : "—",
@@ -222,10 +268,21 @@ export async function buildProposal(etapaClave: string, unidad: UnidadInput): Pr
 }
 
 // ================= ANEXO =================
-const PLUSVALIA_ANUAL = 0.08, PLAZO = 5, COMISION = 0.06;
-const ADR = 450, OCUPACION = 0.45, FEE_RENTA = 0.20, MANTENIMIENTO = 0.10;
-const RENTA_ANIO1 = 51030, RENTA_ANIO2 = 50520, RENTA_TOTAL = 101550; // ADR fijo (unidad-independiente) — TODO ADR por tipología.
-const PLUSVALIA_FACTOR = Math.pow(1 + PLUSVALIA_ANUAL, PLAZO); // 1.469328
+// Supuestos del Anexo — defaults verificados, editables por admin (config_anexo).
+export const SUPUESTOS_DEFAULT: SupuestosAnexo = {
+  plusvaliaAnual: 0.08, plazoAnios: 5, adr: 450, ocupacion: 0.45, comision: 0.06, feeRenta: 0.20, mantenimiento: 0.10,
+};
+
+export async function getSupuestos(): Promise<SupuestosAnexo> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("config_anexo").select("*").eq("id", 1).maybeSingle();
+  if (!data) return { ...SUPUESTOS_DEFAULT };
+  return {
+    plusvaliaAnual: n(data.plusvalia_anual), plazoAnios: Math.round(n(data.plazo_anios)),
+    adr: n(data.adr), ocupacion: n(data.ocupacion), comision: n(data.comision),
+    feeRenta: n(data.fee_renta), mantenimiento: n(data.mantenimiento),
+  };
+}
 
 // Competitive Set (Quivira) — referencia de mercado (verificado, Anexo pág. 4).
 const COMPS: CompRow[] = [
@@ -253,10 +310,14 @@ function tirAnual(flujos: number[]): number | null {
   return (lo + hi) / 2;
 }
 
-export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha: string): Promise<AnexoModel> {
+export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha: string, opts?: { supuestos?: SupuestosAnexo }): Promise<AnexoModel> {
   const E = await fetchEtapa(etapaClave);
   if (!E || E.precio_entrada_m2 == null || E.intermedios_pct == null || E.contra_pct == null || !E.fases_enganche)
     throw new Error("Etapa no disponible");
+
+  const usandoDefaults = !opts?.supuestos;
+  const S = opts?.supuestos ?? await getSupuestos();
+  const plazo = Math.max(4, Math.min(8, Math.round(S.plazoAnios)));
 
   let etiqueta: string, recamaras: string, m2Total: number;
   if (unidad.tipo === "catalogo") {
@@ -274,47 +335,54 @@ export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha:
   const valorActual = baseM2 * m2Total;            // subtotal a $8,500
   const costo = Math.round(precioEntrada * m2Total); // valor total
   const margenValorActual = valorActual - costo;
-  const valorVenta = valorActual * PLUSVALIA_FACTOR;
-  const comision = valorVenta * COMISION;
+  const plusvaliaFactor = Math.pow(1 + S.plusvaliaAnual, plazo);
+  const valorVenta = valorActual * plusvaliaFactor;
+  const comision = valorVenta * S.comision;
   const ventaNeta = valorVenta - comision;
   const utilidadVenta = ventaNeta - costo;
-  const utilidadRenta = RENTA_TOTAL;
-  const utilidadTotal = utilidadVenta + utilidadRenta;
-  const margenCompuesto = costo ? utilidadTotal / costo : 0; // == etapa.margen
 
-  // Flujo anual (años 1-5).
+  // Renta a partir de los supuestos. Último año de renta = 11 meses (mes 12 = venta).
+  const rentaBruta = S.adr * S.ocupacion * 30;
+  const rentaNetaMensual = rentaBruta * (1 - S.feeRenta - S.mantenimiento);
+  const nRenta = plazo - 3; // años de renta (4..plazo)
+  const rentaAnios: number[] = [];
+  for (let k = 0; k < nRenta; k++) rentaAnios.push(rentaNetaMensual * (k === nRenta - 1 ? 11 : 12));
+  const utilidadRenta = rentaAnios.reduce((a, b) => a + b, 0);
+  const utilidadTotal = utilidadVenta + utilidadRenta;
+  const margenCompuesto = costo ? utilidadTotal / costo : 0; // ≈ etapa.margen
+
+  // Flujo por año (1..plazo). Inversión (base de la etapa) en años 1-3; renta y venta después.
   const enganche = (E.fases_enganche ?? []).reduce((a, f) => a + costo * f.pct, 0);
-  const meses = E.intermedios_meses ?? 24;
-  const desde = E.intermedios_desde_idx ?? 8;
-  const men = costo * n(E.intermedios_pct) / meses;
+  const mesesA = E.intermedios_meses ?? 24;
+  const desdeA = E.intermedios_desde_idx ?? 8;
+  const menA = (costo * n(E.intermedios_pct)) / mesesA;
   const interPorAnio = [0, 0, 0];
-  for (let i = desde; i < desde + meses && i < 36; i++) {
-    const anio = Math.floor(i / 12); // 0,1,2 -> años 1,2,3
-    if (anio < 3) interPorAnio[anio] += men;
+  for (let i = desdeA; i < desdeA + mesesA && i < 36; i++) {
+    const a = Math.floor(i / 12);
+    if (a < 3) interPorAnio[a] += menA;
   }
   const contra = costo * n(E.contra_pct);
-  const anio1 = -(enganche + interPorAnio[0]);
-  const anio2 = -(interPorAnio[1]);
-  const anio3 = -(interPorAnio[2] + contra);
-  const anio4 = RENTA_ANIO1;
-  const anio5 = RENTA_ANIO2 + ventaNeta;
-  const flujoAnual = [anio1, anio2, anio3, anio4, anio5];
+
+  const flujoAnual: number[] = [-(enganche + interPorAnio[0]), -interPorAnio[1], -(interPorAnio[2] + contra)];
+  for (let k = 0; k < nRenta; k++) flujoAnual.push(rentaAnios[k] + (k === nRenta - 1 ? ventaNeta : 0));
 
   const fm = (x: number) => "$ " + Math.round(x).toLocaleString("en-US");
   const fmNeg = (x: number) => (x < 0 ? "($" + Math.round(-x).toLocaleString("en-US") + ")" : "$" + Math.round(x).toLocaleString("en-US"));
+  const at = (idx: number, val: string): string[] => Array.from({ length: plazo }, (_, i) => (i === idx ? val : "-"));
+  const rentaRow = Array.from({ length: plazo }, (_, i) => (i >= 3 && i - 3 < nRenta ? fm(rentaAnios[i - 3]) : "-"));
 
   const flujo = [
-    { concepto: "Condominios · Inv. · Enganche", total: fmNeg(-enganche), anios: [fmNeg(-enganche), "-", "-", "-", "-"] },
-    { concepto: "Condominios · Inv. · Mensualidad", total: fmNeg(-(interPorAnio[0] + interPorAnio[1] + interPorAnio[2])), anios: [fmNeg(-interPorAnio[0]), fmNeg(-interPorAnio[1]), fmNeg(-interPorAnio[2]), "-", "-"] },
-    { concepto: "Condominios · Inv. · Finiquito", total: fmNeg(-contra), anios: ["-", "-", fmNeg(-contra), "-", "-"] },
-    { concepto: "Condominios · Renta Neta", total: fm(RENTA_TOTAL), anios: ["-", "-", "-", fm(RENTA_ANIO1), fm(RENTA_ANIO2)] },
-    { concepto: "Condominios · Venta Neta", total: fm(ventaNeta), anios: ["-", "-", "-", "-", fm(ventaNeta)] },
+    { concepto: "Condominios · Inv. · Enganche", total: fmNeg(-enganche), anios: at(0, fmNeg(-enganche)) },
+    { concepto: "Condominios · Inv. · Mensualidad", total: fmNeg(-(interPorAnio[0] + interPorAnio[1] + interPorAnio[2])), anios: Array.from({ length: plazo }, (_, i) => (i < 3 ? fmNeg(-interPorAnio[i]) : "-")) },
+    { concepto: "Condominios · Inv. · Finiquito", total: fmNeg(-contra), anios: at(2, fmNeg(-contra)) },
+    { concepto: "Condominios · Renta Neta", total: fm(utilidadRenta), anios: rentaRow },
+    { concepto: "Condominios · Venta Neta", total: fm(ventaNeta), anios: at(plazo - 1, fm(ventaNeta)) },
     { concepto: "Flujo Total", total: fm(utilidadTotal), anios: flujoAnual.map(fmNeg) },
   ];
 
-  // TIR: FA verificado 21.77%; otras, estimada del flujo anual.
+  // TIR: FA con supuestos por defecto = 21.77% (verificado, mensual); otras/override, estimada del flujo anual.
   let tir: string, tirNota: string;
-  if (E.clave === "FA") {
+  if (E.clave === "FA" && usandoDefaults) {
     tir = "21.77 %"; tirNota = "TIR estimada (flujo mensual).";
   } else {
     const r = tirAnual(flujoAnual);
@@ -330,19 +398,19 @@ export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha:
     comps: COMPS, compsAvg: COMPS_AVG,
     sujeto: { id: "8", desarrollo: "The Cliff Club", descripcion: recamaras, m2: num(m2Total), prM2: fm(precioEntrada), valor: fm(costo) },
     valorActualM2: fm(baseM2), descuento: pct(n(E.descuento)), valorEntradaM2: fm(precioEntrada),
-    plusvaliaAnual: (PLUSVALIA_ANUAL * 100).toFixed(1) + " %", plusvalia5M2: fm(baseM2 * PLUSVALIA_FACTOR),
+    plusvaliaAnual: (S.plusvaliaAnual * 100).toFixed(1) + " %", plusvalia5M2: fm(baseM2 * plusvaliaFactor),
     margenVenta: pct(utilidadVenta / costo),
     areaM2: num(m2Total), valorActual: fm(valorActual), valorTotal: fm(costo),
     margenValorActualPct: pct(margenValorActual / costo), margenValorActual: fm(margenValorActual),
-    valorVentaM2: fm(baseM2 * PLUSVALIA_FACTOR), valorVenta: fm(valorVenta),
-    comisionPct: "6.0 %", comision: fm(comision), ventaNeta: fm(ventaNeta),
+    valorVentaM2: fm(baseM2 * plusvaliaFactor), valorVenta: fm(valorVenta),
+    comisionPct: (S.comision * 100).toFixed(1) + " %", comision: fm(comision), ventaNeta: fm(ventaNeta),
     costo: fm(costo), margenFinal: fm(utilidadVenta), margenFinalPct: pct(utilidadVenta / costo),
-    adr: fm(ADR), ocupacion: pct(OCUPACION), rentaMensual: fm(ADR * OCUPACION * 30),
-    feePct: pct(FEE_RENTA), fee: fm(ADR * OCUPACION * 30 * FEE_RENTA),
-    mantePct: pct(MANTENIMIENTO), mante: fm(ADR * OCUPACION * 30 * MANTENIMIENTO),
-    gastos: fm(ADR * OCUPACION * 30 * (FEE_RENTA + MANTENIMIENTO)),
-    rentaNetaMensual: fm(ADR * OCUPACION * 30 * (1 - FEE_RENTA - MANTENIMIENTO)),
-    rentaAnio1: fm(RENTA_ANIO1), rentaAnio2: fm(RENTA_ANIO2), rentaTotal: fm(RENTA_TOTAL),
+    adr: fm(S.adr), ocupacion: pct(S.ocupacion), rentaMensual: fm(rentaBruta),
+    feePct: pct(S.feeRenta), fee: fm(rentaBruta * S.feeRenta),
+    mantePct: pct(S.mantenimiento), mante: fm(rentaBruta * S.mantenimiento),
+    gastos: fm(rentaBruta * (S.feeRenta + S.mantenimiento)),
+    rentaNetaMensual: fm(rentaNetaMensual),
+    rentaAnio1: fm(rentaAnios[0] ?? 0), rentaAnio2: fm(rentaAnios[nRenta - 1] ?? 0), rentaTotal: fm(utilidadRenta),
     utilidadRenta: fm(utilidadRenta), utilidadVenta: fm(utilidadVenta), utilidadTotal: fm(utilidadTotal),
     flujo,
     margenProyectado: pct(margenCompuesto),

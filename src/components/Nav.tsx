@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const ITEMS = [
+  { href: "/", label: "Inicio" },
   { href: "/cotizador", label: "Cotizador" },
   { href: "/prospectos", label: "Prospectos" },
   { href: "/cotizaciones", label: "Cotizaciones" },
@@ -11,14 +12,17 @@ const ITEMS = [
 
 export function Nav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
-  const items = isAdmin ? [...ITEMS, { href: "/admin", label: "Admin" }] : ITEMS;
+  const items = [...ITEMS, ...(isAdmin ? [{ href: "/admin", label: "Admin" }] : []), { href: "/perfil", label: "Mi perfil" }];
   return (
     <nav className="top">
-      {items.map((it) => (
-        <Link key={it.href} href={it.href} className={pathname.startsWith(it.href) ? "active" : ""}>
-          {it.label}
-        </Link>
-      ))}
+      {items.map((it) => {
+        const active = it.href === "/" ? pathname === "/" : pathname.startsWith(it.href);
+        return (
+          <Link key={it.href} href={it.href} className={active ? "active" : ""}>
+            {it.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }

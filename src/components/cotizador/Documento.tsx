@@ -40,6 +40,11 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           <span>Preparada para · {cliente}</span>
           <span>Expedición · {fecha}</span>
         </div>
+        {model.asesor.nombre && (
+          <div className="cover-meta" style={{ marginTop: 8, borderTop: 0, paddingTop: 0 }}>
+            <span>Preparada por · {model.asesor.nombre}{model.asesor.puesto ? ` · ${model.asesor.puesto}` : ""}</span>
+          </div>
+        )}
       </section>
 
       {/* ===== 2 · HERO edificio (img a sangre, sí imprime) ===== */}

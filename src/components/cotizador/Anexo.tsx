@@ -148,7 +148,7 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
       <section className="page">
         <Khead>06 · Proyección de Flujo</Khead>
         <table className="amort2">
-          <thead><tr><th>Concepto</th><th className="r">Total</th><th className="r">Año 1</th><th className="r">Año 2</th><th className="r">Año 3</th><th className="r">Año 4</th><th className="r">Año 5</th></tr></thead>
+          <thead><tr><th>Concepto</th><th className="r">Total</th>{Array.from({ length: M.flujo[0]?.anios.length ?? 5 }, (_, i) => <th key={i} className="r">Año {i + 1}</th>)}</tr></thead>
           <tbody>
             {M.flujo.map((f, i) => (
               <tr key={i} style={i === M.flujo.length - 1 ? { fontWeight: 700, borderTop: "2px solid var(--ink-blue)" } : undefined}>

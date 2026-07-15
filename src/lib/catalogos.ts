@@ -101,6 +101,8 @@ export type ProposalModel = {
   tablero: CeldaTablero[];
   planoSrc: string | null;
   canalContacto: string;
+  asesor: { nombre: string; contacto: string; puesto: string };
+  planNombre: string; // "Base" | "Personalizado"
   snapshot: {
     etapa: string; unidad: string; modelo: string;
     valor_total: number; precio_m2: number; descuento: number; margen: string; margen_estado: string;
@@ -110,6 +112,24 @@ export type ProposalModel = {
 export type UnidadInput =
   | { tipo: "catalogo"; clave: string }
   | { tipo: "libre"; m2: number; recamaras?: string };
+
+// Asesor que prepara la propuesta (Parte E).
+export type Asesor = { nombre: string; contacto: string; puesto: string; telefono: string; email: string };
+
+// Plan de pagos personalizado por cotización (Parte B).
+export type FaseInput = { c: string; pct: number; mes: number };
+export type PlanOverride = {
+  enganchePct: number; // 0–1
+  contraPct: number; // 0–1
+  meses: number; // nº de mensualidades intermedias
+  fases?: FaseInput[]; // desglose del enganche (avanzado); suma = enganchePct
+};
+
+// Supuestos del Anexo (Parte C).
+export type SupuestosAnexo = {
+  plusvaliaAnual: number; plazoAnios: number; adr: number; ocupacion: number;
+  comision: number; feeRenta: number; mantenimiento: number;
+};
 
 // ---- modelo del ANEXO ----
 export type CompRow = { id: string; desarrollo: string; descripcion: string; m2: string; prM2: string; valor: string };
