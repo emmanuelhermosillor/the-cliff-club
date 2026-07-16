@@ -326,9 +326,15 @@ html, body, .page, .sheet, [class*="card"], .stat, .acard, .cover, .contraportad
 /* ---------- print: 1 lámina = 1 hoja carta ---------- */
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  body * { visibility: hidden; }
-  .printdoc, .printdoc * { visibility: visible; }
-  .printdoc { position: absolute; left: 0; top: 0; padding: 0; background: #fff; }
+  /* v8: scoping por display (no visibility) para que Propuesta y Anexo salgan
+     como DOS PDFs independientes — el documento no objetivo no ocupa espacio
+     y no genera páginas en blanco al final del PDF. */
+  header.top, nav { display: none !important; }
+  body > *:not(:has(.printdoc)) { display: none !important; }
+  main { display: block !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
+  main > *:not(:has(.printdoc)):not(.printdoc) { display: none !important; }
+  .docwrap:not(.printdoc) { display: none !important; }
+  .printdoc { display: block !important; margin: 0 !important; padding: 0; background: #fff; }
   .sheet, .page { box-shadow: none; margin: 0; width: 100%; min-height: 100vh; page-break-after: always; }
 }
 @page { size: letter; margin: 0; }

@@ -124,7 +124,18 @@ export function Cotizador({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [etapaClave, unidadSel, m2Manual, recManual, planMode, eng, plazo, contra, fasesAdv]);
 
-  useEffect(() => { if (printTarget) { window.print(); setPrintTarget(null); } }, [printTarget]);
+  // v8: título del documento por PDF (nombre de archivo sugerido al guardar).
+  useEffect(() => {
+    if (!printTarget) return;
+    const prev = document.title;
+    const doc = printTarget === "anexo" ? "Anexo" : "Propuesta";
+    const partes = [doc, model?.etapa.nombre, model?.unidad.etiqueta].filter(Boolean);
+    document.title = `The Cliff Club · ${partes.join(" · ")}`;
+    window.print();
+    document.title = prev;
+    setPrintTarget(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [printTarget]);
 
   function showToast(msg: string) {
     setToast(msg);

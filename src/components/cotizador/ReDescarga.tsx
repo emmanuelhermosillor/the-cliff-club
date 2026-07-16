@@ -15,8 +15,17 @@ export function ReDescarga({
   folio: number;
 }) {
   const [printTarget, setPrintTarget] = useState<"propuesta" | "anexo" | null>(null);
+  // v8: título del documento por PDF (nombre de archivo sugerido al guardar).
   useEffect(() => {
-    if (printTarget) { window.print(); setPrintTarget(null); }
+    if (!printTarget) return;
+    const prev = document.title;
+    const doc = printTarget === "anexo" ? "Anexo" : "Propuesta";
+    const partes = [doc, propuesta?.etapa.nombre, propuesta?.unidad.etiqueta].filter(Boolean);
+    document.title = `The Cliff Club · ${partes.join(" · ")}`;
+    window.print();
+    document.title = prev;
+    setPrintTarget(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [printTarget]);
 
   const cli = cliente || "__________________";
