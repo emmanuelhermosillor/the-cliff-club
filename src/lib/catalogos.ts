@@ -96,7 +96,9 @@ export type ProposalModel = {
   valorEnLetra: string;
   amortRows: AmortRowView[];
   banco: {
-    ben: string; rfc: string; dir: string; banco: string; cuenta: string; clabe: string; swift: string; inter: string; aba: string;
+    ben: string; rfc: string; dir: string;
+    nacional: { banco: string; cuenta: string; clabe: string };
+    internacional: { banco: string; cuenta: string; swift: string; inter: string; aba: string };
   };
   tablero: CeldaTablero[];
   planoSrc: string | null;

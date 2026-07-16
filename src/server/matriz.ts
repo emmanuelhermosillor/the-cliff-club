@@ -8,16 +8,26 @@ import "server-only";
  */
 
 // Datos bancarios para el depósito (nunca al cliente en el bundle).
+// v8 (feedback Gerardo): son DOS cuentas distintas — Nacional e Internacional.
+// La internacional queda PENDIENTE hasta que Gerardo mande los datos correctos (no inventar).
+// Referencia del bloque anterior (mezclaba ambas): SWIFT BJIOMXMLXXX / BJIOMXML ·
+// Intermediario JP Morgan · New York · ABA 021000021 · CHASUS33XXX — reasignar al confirmar.
 export const BANCO = {
   ben: "Adria Capital Proyecto B A001, S.A.P.I. de C.V.",
   rfc: "ACP210520UK7",
   dir: "Cerro San Antonio 202, Lomas de Mazatlán, Mazatlán, Sinaloa, C.P. 82110",
-  banco: "Banco del Bajío, S.A.",
-  cuenta: "342127120401",
-  clabe: "030744900030731157",
-  swift: "BJIOMXMLXXX / BJIOMXML",
-  inter: "JP Morgan · New York",
-  aba: "021000021 · CHASUS33XXX",
+  nacional: {
+    banco: "Banco del Bajío, S.A.",
+    cuenta: "342127120401",
+    clabe: "030744900030731157",
+  },
+  internacional: {
+    banco: "Por confirmar",
+    cuenta: "Por confirmar",
+    swift: "Por confirmar",
+    inter: "Por confirmar",
+    aba: "Por confirmar",
+  },
 };
 
 // Calendario de amortización — 36 meses desde 30/07/2026.
