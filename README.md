@@ -101,11 +101,11 @@ de Gerardo): `masterplan_quivira.jpg` (Introducción), `isometrico_desarrollo.jp
 la Torre), `plano_1br.jpg` y `plano_4br.jpg` (planos por tipología).
 
 ## Pendientes
-- **Torre B = 34 unidades (oficial, v8)**: el catálogo tiene 28; actualizar con el nuevo sales
-  roll cuando Gerardo lo mande (no inventar unidades).
-- **Ubicación de Torre B en el isométrico** (`Documento.tsx`, sección "Ubicación de la Torre"):
-  marcador aproximado con TODO; la posición exacta la confirma Gerardo.
-- **Pines del Competitive Set** (Anexo): posiciones pendientes de Gerardo — no se muestran.
+- ~~Ubicación de Torre B / pines del Competitive Set~~ **Resuelto en v9** con las referencias
+  oficiales de Gerardo (`public/renders/ref_torreB.jpg`, `ref_tablero.jpg`, `ref_competitive.jpg`);
+  las posiciones están copiadas de ahí — ajustar solo contra esas referencias.
+- **Desglose de las 34 unidades de Torre B**: encabezado ya dice 34; el tablero muestra el
+  inventario cargado (28) hasta recibir el nuevo sales roll (no inventar unidades).
 - **Planos 2BR/3BR**: los links de Dropbox de Gerardo traían `rlkey` dañado; se usan los archivos
   oficiales locales previos. Reemplazar cuando lleguen los links corregidos.
 - **Cuenta bancaria internacional**: datos por confirmar (Gerardo) — el bloque en Acuerdos ya
