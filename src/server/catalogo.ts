@@ -95,12 +95,11 @@ async function fetchUnidad(clave: string): Promise<UnidadRow | null> {
   return (data as UnidadRow | null) ?? null;
 }
 
-// Planos por tipología. 1BR/4BR: descargados de los links oficiales de Gerardo (v8).
-// 2BR/3BR: los links del correo traían rlkey dañado — se conservan los archivos oficiales
-// locales (mismo nombre de archivo); TODO reemplazar cuando lleguen los links corregidos.
+// Planos por tipología — los 4 layouts oficiales (v12, misma tanda de Gerardo),
+// verificados por contenido: recámaras + lado de la alberca (2BR izq / 3BR der).
 const PLANOS: Record<string, string> = {
-  "1": "/renders/plano_1br.jpg", "2": "/renders/plano_2rec.jpeg",
-  "3": "/renders/plano_3rec.jpg", "4": "/renders/plano_4br.jpg",
+  "1": "/renders/plano_1br.jpg", "2": "/renders/plano_2br.jpg",
+  "3": "/renders/plano_3br.jpg", "4": "/renders/plano_4br.jpg",
 };
 function planoDeRecamaras(recamaras: string | null): string | null {
   const m = (recamaras ?? "").match(/\d/);

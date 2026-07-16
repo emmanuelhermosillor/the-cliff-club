@@ -98,7 +98,7 @@ Logos oficiales vectoriales (SVG) en `public/brand/`: `wordmark_shell.svg` (crem
 (edificios): `public/renders/masterplan_desarrollo.jpg`. Mapa costero de Quivira:
 `public/renders/masterplan.jpg` (Anexo · Competitive Set, pines pendientes). Oficiales v8 (links
 de Gerardo): `masterplan_quivira.jpg` (Introducción), `isometrico_desarrollo.jpg` (Ubicación de
-la Torre), `plano_1br.jpg` y `plano_4br.jpg` (planos por tipología).
+la Torre), planos por tipología `plano_1br/2br/3br/4br.jpg` (los 4 layouts oficiales, v12).
 
 ## Pendientes
 - ~~Ubicación de Torre B / pines del Competitive Set~~ **Resuelto en v9** con las referencias
@@ -106,8 +106,6 @@ la Torre), `plano_1br.jpg` y `plano_4br.jpg` (planos por tipología).
   las posiciones están copiadas de ahí — ajustar solo contra esas referencias.
 - **Desglose de las 34 unidades de Torre B**: encabezado ya dice 34; el tablero muestra el
   inventario cargado (28) hasta recibir el nuevo sales roll (no inventar unidades).
-- **Planos 2BR/3BR**: los links de Dropbox de Gerardo traían `rlkey` dañado; se usan los archivos
-  oficiales locales previos. Reemplazar cuando lleguen los links corregidos.
 - **Cuenta bancaria internacional**: datos por confirmar (Gerardo) — el bloque en Acuerdos ya
   distingue Cuenta Nacional / Cuenta Internacional.
 - ADR por tipología en el Anexo (hoy fijo $450); TIR de CR/FR es estimada del flujo anual.
