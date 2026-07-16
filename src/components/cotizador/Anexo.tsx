@@ -145,8 +145,9 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
         <div className="stat-row" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
           <Tile lbl="Utilidad por renta" val={M.utilidadRenta} />
           <Tile lbl="Utilidad por venta" val={M.utilidadVenta} />
-          <Tile lbl="Utilidad total" val={M.utilidadTotal} tone="tan" />
+          <Tile lbl="Utilidad proyectada · oficial de la etapa" val={M.utilidadOficial ?? M.utilidadTotal} tone="tan" />
         </div>
+        {M.notaMargen && <p className="note" style={{ marginTop: 8 }}>{M.notaMargen}</p>}
         <div className="dfoot">The Cliff Club Residences · Torre B · {M.etapaNombre}</div>
       </section>
 
@@ -166,14 +167,15 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
         </table>
         <Khead>07 · Indicadores</Khead>
         <div className="margen-banner">
-          <span className="l">Margen proyectado</span><span className="v">{M.margenProyectado}</span>
+          <span className="l">Margen proyectado · oficial de la etapa</span><span className="v">{M.margenProyectado}</span>
         </div>
         <div className="stat-row" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
           <Tile lbl="Inversión" val={M.inversion} />
           <Tile lbl="Utilidad proyectada" val={M.utilidadProyectada} />
-          <Tile lbl="TIR estimada" val={M.tir} tone="teal" />
+          <Tile lbl="TIR del modelo (flujo)" val={M.tir} tone="teal" />
         </div>
-        <p className="note" style={{ marginTop: 8 }}>{M.tirNota}{M.esProyeccion ? " Escenario en proyección — sujeto a confirmación de Gerardo / Adrián." : ""}</p>
+        {M.notaMargen && <p className="note" style={{ marginTop: 8 }}>{M.notaMargen}</p>}
+        <p className="note" style={{ marginTop: 4 }}>{M.tirNota} La TIR es la tasa interna de retorno del flujo del modelo — métrica distinta del margen citado.{M.esProyeccion ? " Escenario en proyección — sujeto a confirmación de Gerardo / Adrián." : ""}</p>
         <div className="dfoot">The Cliff Club Residences · Torre B · {M.etapaNombre}</div>
       </section>
 

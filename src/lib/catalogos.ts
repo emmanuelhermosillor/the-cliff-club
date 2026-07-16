@@ -187,11 +187,15 @@ export type AnexoModel = {
   utilidadTotal: string;
   // 06 flujo
   flujo: { concepto: string; total: string; anios: string[] }[];
-  // 07 indicadores
-  margenProyectado: string;
+  // 07 indicadores — headline = margen oficial de la etapa (v11)
+  margenProyectado: string; // oficial (etapa.margen)
   inversion: string;
-  utilidadProyectada: string;
+  utilidadProyectada: string; // inversión × margen oficial
   utilidadMasInversion: string;
+  utilidadOficial: string; // igual a utilidadProyectada (tarjeta 05)
+  margenModelo: string; // bottom-up venta+renta (respaldo)
+  utilidadModelo: string;
+  notaMargen: string; // reconciliación; "" si el modelo coincide con el oficial
   tir: string; // "21.77 %" o "—"
   tirNota: string;
   // 08 conclusión

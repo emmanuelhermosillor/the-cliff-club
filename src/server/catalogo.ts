@@ -352,7 +352,22 @@ export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha:
   for (let k = 0; k < nRenta; k++) rentaAnios.push(rentaNetaMensual * (k === nRenta - 1 ? 11 : 12));
   const utilidadRenta = rentaAnios.reduce((a, b) => a + b, 0);
   const utilidadTotal = utilidadVenta + utilidadRenta;
-  const margenCompuesto = costo ? utilidadTotal / costo : 0; // ≈ etapa.margen
+  const margenCompuesto = costo ? utilidadTotal / costo : 0; // modelo bottom-up (venta+renta)
+
+  // v11: el margen HEADLINE es el oficial de la etapa (etapa.margen) — única
+  // fuente de verdad, idéntico al de la Propuesta. El modelo por componentes
+  // se conserva como respaldo; si difiere del oficial se agrega una nota de
+  // reconciliación (no se fuerzan los renglones del modelo).
+  const margenOficial = n(E.margen) > 0 ? n(E.margen) : margenCompuesto;
+  const utilidadOficial = costo * margenOficial;
+  const pOfi = pct(margenOficial), pMod = pct(margenCompuesto);
+  let notaMargen = "";
+  if (pMod !== pOfi) {
+    notaMargen = margenCompuesto > margenOficial
+      ? `Margen compuesto citado conforme al oficial de la etapa (${pOfi}). El modelo por componentes (venta + renta) proyecta un potencial mayor (${pMod} · $${millones(utilidadTotal)}); se cita el oficial por prudencia.`
+      : `Margen citado conforme al oficial de la etapa (${pOfi}). El modelo por componentes (venta + renta) proyecta ${pMod} · $${millones(utilidadTotal)}.`;
+    if (margenCompuesto < margenOficial) console.warn(`[anexo] modelo (${pMod}) por debajo del oficial (${pOfi}) en ${E.clave} ${etiqueta} — revisar con Gerardo.`);
+  }
 
   // Flujo por año (1..plazo). Inversión (base de la etapa) en años 1-3; renta y venta después.
   const enganche = (E.fases_enganche ?? []).reduce((a, f) => a + costo * f.pct, 0);
@@ -416,9 +431,11 @@ export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha:
     rentaAnio1: fm(rentaAnios[0] ?? 0), rentaAnio2: fm(rentaAnios[nRenta - 1] ?? 0), rentaTotal: fm(utilidadRenta),
     utilidadRenta: fm(utilidadRenta), utilidadVenta: fm(utilidadVenta), utilidadTotal: fm(utilidadTotal),
     flujo,
-    margenProyectado: pct(margenCompuesto),
-    inversion: "$ " + millones(costo), utilidadProyectada: "$ " + millones(utilidadTotal),
-    utilidadMasInversion: "$ " + millones(utilidadTotal + costo),
+    margenProyectado: pOfi,
+    inversion: "$ " + millones(costo), utilidadProyectada: "$ " + millones(utilidadOficial),
+    utilidadMasInversion: "$ " + millones(utilidadOficial + costo),
+    utilidadOficial: "$ " + millones(utilidadOficial),
+    margenModelo: pMod, utilidadModelo: "$ " + millones(utilidadTotal), notaMargen,
     tir, tirNota,
     conclusion1: {
       titulo: `Entrada preferencial con ${pct(n(E.descuento))} de descuento`,
@@ -426,7 +443,7 @@ export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha:
     },
     conclusion2: {
       titulo: "Potencial de Rentabilidad",
-      texto: `Utilidad total proyectada de Usd $${millones(utilidadTotal)}, equivalente a un margen estimado de ${pct(margenCompuesto)} sobre la inversión inicial de $${millones(costo)}.`,
+      texto: `Utilidad total proyectada de Usd $${millones(utilidadOficial)}, equivalente a un margen estimado de ${pOfi} sobre la inversión inicial de $${millones(costo)}.`,
     },
     fecha,
   };
