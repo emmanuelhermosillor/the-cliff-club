@@ -96,7 +96,8 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
         <p className="lead2">
           Por medio del presente documento, nos permitimos poner a su consideración una propuesta de adquisición dentro de The Cliff Club Residences at Quivira, un desarrollo residencial privado ubicado en Cabo San Lucas, Baja California Sur, dentro de uno de los enclaves más exclusivos del destino. Esta propuesta forma parte de una etapa privada de comercialización temprana, dirigida a un grupo selecto de compradores previo al lanzamiento del proyecto en mercado abierto.
         </p>
-        <div className="imgwide" style={{ height: "2.3in", margin: "6px 0 18px" }}>
+        {/* v11: 2.3in dejaba el pie al filo de la hoja y derramaba una página casi vacía */}
+        <div className="imgwide" style={{ height: "2.05in", margin: "6px 0 16px" }}>
           <img src="/renders/fachada_dia.jpg" alt="The Cliff Club Residences · fachada" />
         </div>
         <div className="colhead">Proyecto &amp; Grupo Desarrollador</div>
