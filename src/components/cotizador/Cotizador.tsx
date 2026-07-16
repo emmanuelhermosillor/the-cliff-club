@@ -159,7 +159,43 @@ export function Cotizador({
       setAnexo(await computeAnexo(etapaClave, ui, formatFecha(fecha) || FECHA_PH, supuestosOverride()));
       setShowAnexo(true);
       setTimeout(() => document.getElementById("doc-anexo")?.scrollIntoView({ behavior: "smooth" }), 60);
-    } catch { showToast("No se pudo generar el Anexo."); } finally { setBusy(false); }
+    } catch (e) {
+      console.error("generarAnexo:", e);
+      showToast(`No se pudo generar el Anexo: ${e instanceof Error ? e.message : String(e)}`);
+    } finally { setBusy(false); }
+  }
+  // v10: descarga en un gesto — si el documento aún no está montado, lo genera,
+  // espera a que el DOM pinte (doble requestAnimationFrame) y recién imprime.
+  // Respaldo con setTimeout: en pestañas ocultas/estranguladas rAF no corre.
+  function afterPaint(cb: () => void) {
+    let done = false;
+    const go = () => { if (!done) { done = true; cb(); } };
+    requestAnimationFrame(() => requestAnimationFrame(go));
+    window.setTimeout(go, 350);
+  }
+  function descargarPropuesta() {
+    if (!model) { showToast("Elige una unidad y un plan válido para descargar."); return; }
+    if (!showDoc) {
+      setShowDoc(true);
+      afterPaint(() => setPrintTarget("propuesta"));
+      return;
+    }
+    setPrintTarget("propuesta");
+  }
+  async function descargarAnexo() {
+    if (!model) { showToast("Elige una unidad y un plan válido para descargar."); return; }
+    if (anexo && showAnexo) { setPrintTarget("anexo"); return; }
+    const ui = unidadInput();
+    if (!ui) { showToast("Elige una unidad para generar el Anexo."); return; }
+    setBusy(true);
+    try {
+      setAnexo(await computeAnexo(etapaClave, ui, formatFecha(fecha) || FECHA_PH, supuestosOverride()));
+      setShowAnexo(true);
+      afterPaint(() => setPrintTarget("anexo"));
+    } catch (e) {
+      console.error("descargarAnexo:", e);
+      showToast(`No se pudo generar el Anexo: ${e instanceof Error ? e.message : String(e)}`);
+    } finally { setBusy(false); }
   }
   async function guardar() {
     const ui = unidadInput();
@@ -323,19 +359,19 @@ export function Cotizador({
       <div className="genbar">
         <button className="btn" onClick={generarPropuesta} disabled={busy || !model}>Generar propuesta</button>
         <button className="btn ghost" onClick={generarAnexo} disabled={busy || !model}>Generar Anexo</button>
-        {showDoc && <button className="btn ghost sm" onClick={() => setPrintTarget("propuesta")}>Descargar PDF</button>}
-        {showAnexo && <button className="btn ghost sm" onClick={() => setPrintTarget("anexo")}>Descargar Anexo PDF</button>}
+        <button className="btn ghost sm" onClick={descargarPropuesta} disabled={busy || !model}>Descargar Propuesta (PDF)</button>
+        <button className="btn ghost sm" onClick={descargarAnexo} disabled={busy || !model}>Descargar Anexo (PDF)</button>
         <button className="btn ghost sm" onClick={compartirWhatsApp} disabled={!model}>Compartir por WhatsApp</button>
         <button className="btn sm" onClick={guardar} disabled={saving || !model}>{saving ? "Guardando…" : "Guardar en CRM"}</button>
       </div>
 
       {showDoc && model && (
-        <div id="doc-propuesta" className={`docwrap${printTarget === "propuesta" ? " printdoc" : ""}`}>
+        <div id="doc-propuesta" className="docwrap">
           <Documento model={model} cliente={cli} fecha={fec} />
         </div>
       )}
       {showAnexo && anexo && (
-        <div id="doc-anexo" className={`docwrap${printTarget === "anexo" ? " printdoc" : ""}`} style={{ marginTop: 20 }}>
+        <div id="doc-anexo" className="docwrap" style={{ marginTop: 20 }}>
           <Anexo model={anexo} cliente={cli} fecha={fec} />
         </div>
       )}
