@@ -206,7 +206,8 @@ h2.title { font-family: var(--display); font-weight: 500; font-size: 40px; line-
 
 /* ---- impresión de color de marca (raíz del bug de PDF) ---- */
 html, body, .page, .sheet, [class*="card"], .stat, .acard, .cover, .contraportada,
-.page.blue, .page.cover-portada, .bcell, .board2, .khead, .hl, .pill {
+.page.blue, .page.cover-portada, .bcell, .board2, .khead, .hl, .pill,
+.fboard, .fcell, .fcell .dot, .flegend i, .pin, .mp-pin .head, .mp-pin .tail, .mp-mark {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -233,6 +234,30 @@ html, body, .page, .sheet, [class*="card"], .stat, .acard, .cover, .contraportad
 .hero-text .hero-line { font-family: var(--display); font-size: 30px; color: #fff; margin-top: 8px; }
 .mp-badge { position: absolute; top: 8px; right: 8px; z-index: 2; background: rgba(107,157,161,.92); color: var(--shell); font-family: var(--mono); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; }
 
+/* v9 — señalamiento de Torre B sobre el isométrico (posiciones de ref_torreB.jpg) */
+.mp-iso { position: relative; border-radius: 12px; overflow: hidden; }
+.mp-iso img { width: 100%; display: block; }
+.mp-mark { position: absolute; z-index: 2; border: 2px dashed var(--blue); border-radius: 4px; background: rgba(107,157,161,.08); }
+.mp-pin { position: absolute; z-index: 3; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; }
+.mp-pin .head { width: 24px; height: 24px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--display); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.mp-pin .tail { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid var(--blue); margin-top: -2px; }
+
+/* v9 — tablero "Ubicación de la Unidad" con look de fachada (ref_tablero.jpg) */
+.fboard { border: 1px solid #d8cec0; border-radius: 8px; background: linear-gradient(#f0e8d9, #e8ddc9); padding: 10px 12px 12px; }
+.fboard .parapet { height: 7px; background: #ddd2bd; border-radius: 3px; margin-bottom: 8px; }
+.fboard .fgrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px 6px; }
+.fcell { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 2px; background: #f8f2e5; border: 1px solid #dcd2bf; border-radius: 3px; font-family: var(--mono); font-size: 8.5px; color: #5f594c; }
+.fcell.empty { background: #e8ddc9; border-color: transparent; }
+.fcell .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.fcell.vendida .dot { background: #7d8663; }
+.fcell.apartada .dot { background: #8a6f57; }
+.fcell.sel { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 700; outline: 2px dashed rgba(107,157,161,.65); outline-offset: 2px; }
+.fboard .garden { height: 9px; margin-top: 8px; border-radius: 3px; background: linear-gradient(90deg, #a9b087, #c4c39d 30%, #a9b087 62%, #b7bd93); opacity: .75; }
+.flegend { display: flex; gap: 16px; margin-top: 10px; font-family: var(--mono); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; color: var(--warm); }
+.flegend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+.flegend i.v { background: #7d8663; }
+.flegend i.a { background: #8a6f57; }
+
 /* ---- ANEXO (v5) ---- */
 .anexo-portada { padding: 0; flex-direction: row; }
 .anexo-portada .band { width: 2.7in; background: var(--blue); color: var(--shell); display: flex; flex-direction: column; justify-content: space-between; padding: .85in .5in; }
@@ -250,8 +275,12 @@ html, body, .page, .sheet, [class*="card"], .stat, .acard, .cover, .contraportad
 .rowgroup { background: var(--card-tan); border-radius: 6px; padding: 6px 12px; font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: #6a5f4c; margin: 14px 0 4px; }
 .anexo-map { position: relative; border-radius: 12px; overflow: hidden; }
 .anexo-map img { width: 100%; display: block; }
-.pin { position: absolute; transform: translate(-50%, -50%); z-index: 2; min-width: 20px; height: 20px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--mono); font-size: 10px; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
-.pin.cliff { background: var(--sand); color: var(--ink); border-radius: 11px; padding: 0 9px; height: 22px; font-size: 8px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+/* v9: pines como en ref_competitive.jpg — círculos crema (1–4) y oliva (5–7),
+   The Cliff Club como marcador azul con cola apuntando al desarrollo. */
+.pin { position: absolute; transform: translate(-50%, -50%); z-index: 2; min-width: 22px; height: 22px; border-radius: 50%; background: #f2e9db; color: #4c473d; font-family: var(--mono); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.pin.olive { background: #8e9278; color: #fff; }
+.pin.cliff { transform: translate(-50%, -100%); margin-top: -8px; background: var(--blue); color: var(--shell); border-radius: 8px; padding: 5px 9px; height: auto; min-width: 0; font-size: 7.5px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; white-space: nowrap; }
+.pin.cliff::after { content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%); border: 7px solid transparent; border-top: 9px solid var(--blue); }
 
 /* contraportada azul */
 .page.blue { background: var(--blue); color: #fff; align-items: center; justify-content: center; text-align: center; }

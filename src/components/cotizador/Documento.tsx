@@ -11,6 +11,8 @@ function Khead({ children }: { children: React.ReactNode }) {
 }
 
 function boardRows(tablero: CeldaTablero[]): CeldaTablero[][] {
+  // Orden visual de filas: B101 arriba -> B501 abajo, como en ref_tablero.jpg
+  // (el campo `piso` del catálogo ya codifica ese orden con sort descendente).
   const pisos = [...new Set(tablero.map((c) => c.piso))].sort((a, b) => b - a);
   return pisos.map((p) => tablero.filter((c) => c.piso === p).sort((a, b) => a.clave.localeCompare(b.clave)));
 }
@@ -132,7 +134,9 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
         <h2 className="dtitle" style={{ marginTop: 10 }}>La oportunidad — <span className="hl">{E.nombre}</span></h2>
         <p className="dsub">{E.desc}</p>
         <div className="acard" style={{ background: "#efece5", marginTop: 18 }}>
-          <p style={{ fontFamily: "var(--display)", fontSize: 18, color: "var(--ink-blue)", margin: 0 }}>134 residencias en total. Torre B abre primero, a un número contado.</p>
+          {/* TODO (v9): Torre B = 34 unidades oficial. El tablero muestra el inventario
+              cargado (28) hasta recibir el desglose del nuevo sales roll — no inventar. */}
+          <p style={{ fontFamily: "var(--display)", fontSize: 18, color: "var(--ink-blue)", margin: 0 }}>134 residencias en total. Torre B abre primero, con 34 unidades.</p>
           <p className="lead2" style={{ margin: "6px 0 0" }}>Disponibilidad de esta etapa · <b>{model.unidadesDisponibles}</b> residencias.</p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, margin: "18px 0" }}>
@@ -223,26 +227,42 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
         <Khead>Descripción de los condominios</Khead>
         <div className="twocol" style={{ gap: 26 }}>
           <div>
-            <div className="colhead">01 · Ubicación de la Torre</div>
-            <div className="imgwide" style={{ height: "2in", marginBottom: 8, position: "relative" }}>
-              <img src="/renders/isometrico_desarrollo.jpg" alt="Isométrico del desarrollo" />
-              <span className="mp-badge">Torre {model.torre} · ubicación por confirmar</span>
+            <div className="colhead">01 · Ubicación en el Master Plan</div>
+            {/* Señalamiento de Torre B copiado de ref_torreB.jpg (referencia oficial, v9). */}
+            <div className="mp-iso" style={{ marginBottom: 8 }}>
+              <img src="/renders/isometrico_desarrollo.jpg" alt={`Isométrico del desarrollo · Torre ${model.torre} señalada`} />
+              <span className="mp-mark" style={{ left: "48.5%", top: "38%", width: "16.5%", height: "14%" }} />
+              <span className="mp-pin" style={{ left: "56.75%", top: "39.5%" }}><span className="head">{model.torre}</span><span className="tail" /></span>
             </div>
-            <p className="note">Isométrico del desarrollo. TODO: señalar la posición exacta de Torre {model.torre} (la confirma Gerardo).</p>
+            <p className="note">Torre {model.torre} señalada sobre el isométrico del desarrollo.</p>
           </div>
           <div>
-            <div className="colhead">02 · Piso y disponibilidad — Torre {model.torre}</div>
-            <div className="board2">
-              {rows.map((row, i) => (
-                <div className="brow" key={i}>
-                  {row.map((c) => (
-                    <div key={c.clave} className={`bcell ${c.disponibilidad}${c.selected ? " sel" : ""}`}>{c.etiqueta.replace("B ", "B")}</div>
-                  ))}
-                </div>
-              ))}
+            <div className="colhead">02 · Ubicación de la Unidad</div>
+            {/* Tablero dinámico con look de fachada (ref_tablero.jpg): pisos 1→5 de arriba
+                a abajo, columna = número de unidad; alimenta del inventario real y resalta
+                la unidad cotizada. Celdas sin unidad en catálogo quedan como muro (no se
+                inventan unidades; el desglose de las 34 llega con el nuevo sales roll). */}
+            <div className="fboard">
+              <div className="parapet" />
+              <div className="fgrid">
+                {rows.map((row, i) => {
+                  const porCol = new Map(row.map((c) => [c.clave.slice(-1), c]));
+                  return ["1", "2", "3", "4", "5", "6"].map((col) => {
+                    const c = porCol.get(col);
+                    if (!c) return <div key={`${i}-${col}`} className="fcell empty" />;
+                    return (
+                      <div key={c.clave} className={`fcell ${c.disponibilidad}${c.selected ? " sel" : ""}`}>
+                        {c.etiqueta.replace("B ", "B")}
+                        {(c.disponibilidad === "vendida" || c.disponibilidad === "apartada") && <i className="dot" />}
+                      </div>
+                    );
+                  });
+                })}
+              </div>
+              <div className="garden" />
             </div>
-            <div className="blegend"><span><i className="d" />Disponible</span><span><i className="a" />Apartado</span><span><i className="v" />Vendido</span></div>
-            <p className="note" style={{ marginTop: 6 }}>Estados reales. Unidad {U.etiqueta} destacada.</p>
+            <div className="flegend"><span><i className="v" />Vendido</span><span><i className="a" />Apartado</span></div>
+            <p className="note" style={{ marginTop: 6 }}>Estados reales del inventario. Unidad {U.etiqueta} destacada.</p>
           </div>
         </div>
         <div className="twocol" style={{ marginTop: 18, gap: 26 }}>
