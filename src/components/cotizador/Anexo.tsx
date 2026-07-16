@@ -13,8 +13,17 @@ function Tile({ lbl, val, tone }: { lbl: string; val: string; tone?: "blue" | "t
   );
 }
 
-// Pines de comparables: las posiciones reales las confirma Gerardo — NO se muestran
-// posiciones inventadas (feedback v8). TODO: colocar pines 1–7 + The Cliff Club al recibirlas.
+// Pines del Competitive Set — posiciones copiadas de ref_competitive.jpg
+// (referencia oficial de Gerardo, v9): 7 comparables + The Cliff Club a la derecha.
+const PINS: { n: number; left: string; top: string; tone?: "olive" }[] = [
+  { n: 1, left: "17%", top: "49%" },
+  { n: 2, left: "20%", top: "56%" },
+  { n: 3, left: "25%", top: "41%" },
+  { n: 4, left: "31%", top: "47%" },
+  { n: 5, left: "19%", top: "37%", tone: "olive" },
+  { n: 6, left: "14%", top: "64%", tone: "olive" },
+  { n: 7, left: "28.5%", top: "58.5%", tone: "olive" },
+];
 
 export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: string; fecha: string }) {
   const M = model;
@@ -55,9 +64,13 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
       <section className="page">
         <Khead>01 · Quivira Competitive Set</Khead>
         <div className="anexo-map" style={{ marginBottom: 14 }}>
-          <img src="/renders/masterplan.jpg" alt="Quivira · Competitive Set" />
+          <img src="/renders/masterplan_quivira.jpg" alt="Quivira · Competitive Set" />
+          {PINS.map((p) => (
+            <span key={p.n} className={`pin${p.tone ? ` ${p.tone}` : ""}`} style={{ left: p.left, top: p.top }}>{p.n}</span>
+          ))}
+          <span className="pin cliff" style={{ left: "81%", top: "43%" }}>The Cliff Club</span>
         </div>
-        <p className="note" style={{ margin: "0 0 12px" }}>Ubicaciones de los comparables sobre el mapa: pendientes de confirmación (Gerardo).</p>
+        <p className="note" style={{ margin: "0 0 12px" }}>Comparables 1–7 y The Cliff Club sobre el Master Plan de Quivira.</p>
         <table className="amort2">
           <thead><tr><th>ID</th><th>Desarrollo</th><th>Descripción</th><th className="r">M² Total</th><th className="r">Pr/M² USD</th><th className="r">Valor</th></tr></thead>
           <tbody>
