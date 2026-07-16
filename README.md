@@ -80,6 +80,8 @@ Placeholders con `TODO` (pendientes de Gerardo):
   Reserve sale en `proyeccion`, marcado "sujeto a confirmación". `ADR por tipología` = TODO.
 - **Inventario real Torre B** (`unidades`, migración 0002): 28 unidades con `piso`/`disponibilidad`/
   `modelo`. El cotizador solo cotiza `disponible` (24); el tablero muestra todas por piso, coloreadas.
+  **TODO (v8)**: Torre B tiene **34 unidades** según Gerardo — el inventario se actualizará cuando
+  llegue el nuevo sales roll oficial; no agregar unidades sin ese documento.
 - **UX**: el cotizador es un formulario con resumen en vivo; el documento y el Anexo solo se
   muestran al pulsar Generar. Descargar PDF imprime el documento activo (print CSS).
 
@@ -93,11 +95,21 @@ e historial, y borrado con confirmación de dos pasos + cascada. Todo respeta RL
 ## Assets de marca
 Logos oficiales vectoriales (SVG) en `public/brand/`: `wordmark_shell.svg` (crema, sobre azul/oscuro),
 `wordmark_blue.svg` (login), `logo_compuesto_shell.svg` (contraportadas). Master plan del desarrollo
-(edificios): `public/renders/masterplan_desarrollo.jpg` (propuesta). Mapa costero de Quivira:
-`public/renders/masterplan.jpg` (Anexo · Competitive Set, con pines aproximados).
+(edificios): `public/renders/masterplan_desarrollo.jpg`. Mapa costero de Quivira:
+`public/renders/masterplan.jpg` (Anexo · Competitive Set, pines pendientes). Oficiales v8 (links
+de Gerardo): `masterplan_quivira.jpg` (Introducción), `isometrico_desarrollo.jpg` (Ubicación de
+la Torre), `plano_1br.jpg` y `plano_4br.jpg` (planos por tipología).
 
 ## Pendientes
-- Assets subibles por admin: Master Plan y Master Plan con Torre B señalada (placeholders con TODO).
+- **Torre B = 34 unidades (oficial, v8)**: el catálogo tiene 28; actualizar con el nuevo sales
+  roll cuando Gerardo lo mande (no inventar unidades).
+- **Ubicación de Torre B en el isométrico** (`Documento.tsx`, sección "Ubicación de la Torre"):
+  marcador aproximado con TODO; la posición exacta la confirma Gerardo.
+- **Pines del Competitive Set** (Anexo): posiciones pendientes de Gerardo — no se muestran.
+- **Planos 2BR/3BR**: los links de Dropbox de Gerardo traían `rlkey` dañado; se usan los archivos
+  oficiales locales previos. Reemplazar cuando lleguen los links corregidos.
+- **Cuenta bancaria internacional**: datos por confirmar (Gerardo) — el bloque en Acuerdos ya
+  distingue Cuenta Nacional / Cuenta Internacional.
 - ADR por tipología en el Anexo (hoy fijo $450); TIR de CR/FR es estimada del flujo anual.
 - Inventario en **BORRADOR**: confirmar B304 (cargada como 1 rec) y baños de PH/FG con Gerardo.
 - Fuentes licenciadas IvyOra/Söhne — ver `public/fonts/README.md`.
