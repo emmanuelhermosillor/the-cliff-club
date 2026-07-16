@@ -13,11 +13,8 @@ function Tile({ lbl, val, tone }: { lbl: string; val: string; tone?: "blue" | "t
   );
 }
 
-// Posiciones APROXIMADAS de los comparables sobre el mapa de Quivira (TODO: exactas de Gerardo).
-const PINS: { top: string; left: string }[] = [
-  { top: "40%", left: "62%" }, { top: "34%", left: "70%" }, { top: "46%", left: "78%" },
-  { top: "30%", left: "52%" }, { top: "58%", left: "40%" }, { top: "50%", left: "24%" }, { top: "64%", left: "70%" },
-];
+// Pines de comparables: las posiciones reales las confirma Gerardo — NO se muestran
+// posiciones inventadas (feedback v8). TODO: colocar pines 1–7 + The Cliff Club al recibirlas.
 
 export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: string; fecha: string }) {
   const M = model;
@@ -59,12 +56,8 @@ export function Anexo({ model, cliente, fecha }: { model: AnexoModel; cliente: s
         <Khead>01 · Quivira Competitive Set</Khead>
         <div className="anexo-map" style={{ marginBottom: 14 }}>
           <img src="/renders/masterplan.jpg" alt="Quivira · Competitive Set" />
-          {PINS.map((p, i) => (
-            <span key={i} className="pin" style={{ top: p.top, left: p.left }}>{i + 1}</span>
-          ))}
-          <span className="pin cliff" style={{ top: "72%", left: "50%" }}>The Cliff Club</span>
         </div>
-        <p className="note" style={{ margin: "0 0 12px" }}>Posiciones de comparables aproximadas sobre Quivira. TODO: ubicaciones exactas.</p>
+        <p className="note" style={{ margin: "0 0 12px" }}>Ubicaciones de los comparables sobre el mapa: pendientes de confirmación (Gerardo).</p>
         <table className="amort2">
           <thead><tr><th>ID</th><th>Desarrollo</th><th>Descripción</th><th className="r">M² Total</th><th className="r">Pr/M² USD</th><th className="r">Valor</th></tr></thead>
           <tbody>
