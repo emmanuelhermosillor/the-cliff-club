@@ -19,6 +19,19 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
   const E = model.etapa;
   const U = model.unidad;
   const A = model.areas;
+  // v8: snapshots congelados anteriores traen `banco` plano (una sola cuenta mixta).
+  // Se normaliza para re-descarga sin alterar los datos congelados: lo nacional viene
+  // de los campos planos y el SWIFT/intermediario/ABA congelados se muestran tal cual.
+  const legacyBanco = model.banco as ProposalModel["banco"] & {
+    banco?: string; cuenta?: string; clabe?: string; swift?: string; inter?: string; aba?: string;
+  };
+  const bancoNac = model.banco.nacional ?? {
+    banco: legacyBanco.banco ?? "", cuenta: legacyBanco.cuenta ?? "", clabe: legacyBanco.clabe ?? "",
+  };
+  const bancoInt = model.banco.internacional ?? {
+    banco: "Por confirmar", cuenta: "Por confirmar",
+    swift: legacyBanco.swift ?? "Por confirmar", inter: legacyBanco.inter ?? "Por confirmar", aba: legacyBanco.aba ?? "Por confirmar",
+  };
   const left = model.amortRows.slice(0, 18);
   const right = model.amortRows.slice(18, 36);
   const rows = boardRows(model.tablero);
@@ -107,7 +120,7 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
           </div>
           <div>
             <div className="colhead">Master Plan</div>
-            <div className="imgwide" style={{ height: "2.2in" }}><img src="/renders/masterplan_desarrollo.jpg" alt="Master Plan · The Cliff Club" /></div>
+            <div className="imgwide" style={{ height: "2.2in" }}><img src="/renders/masterplan_quivira.jpg" alt="Master Plan de Quivira" /></div>
           </div>
         </div>
         <div className="dfoot">The Cliff Club Residences · At Quivira · Los Cabos</div>
@@ -210,11 +223,12 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
         <Khead>Descripción de los condominios</Khead>
         <div className="twocol" style={{ gap: 26 }}>
           <div>
-            <div className="colhead">01 · Ubicación en el proyecto</div>
+            <div className="colhead">01 · Ubicación de la Torre</div>
             <div className="imgwide" style={{ height: "2in", marginBottom: 8, position: "relative" }}>
-              <img src="/renders/masterplan.jpg" alt="Master Plan de Quivira" />
+              <img src="/renders/isometrico_desarrollo.jpg" alt="Isométrico del desarrollo" />
+              <span className="mp-badge">Torre {model.torre} · ubicación por confirmar</span>
             </div>
-            <p className="note">Master Plan de Quivira · ubicación del proyecto.</p>
+            <p className="note">Isométrico del desarrollo. TODO: señalar la posición exacta de Torre {model.torre} (la confirma Gerardo).</p>
           </div>
           <div>
             <div className="colhead">02 · Piso y disponibilidad — Torre {model.torre}</div>
@@ -283,13 +297,17 @@ export function Documento({ model, cliente, fecha }: { model: ProposalModel; cli
             <div className="kv"><span className="k">Domicilio</span><span className="val" style={{ textAlign: "right", fontSize: 11 }}>{model.banco.dir}</span></div>
           </div>
           <div>
-            <div className="colhead">Transferencias nac. e intl.</div>
-            <div className="kv"><span className="k">Banco</span><span className="val">{model.banco.banco}</span></div>
-            <div className="kv"><span className="k">CLABE</span><span className="val">{model.banco.clabe}</span></div>
-            <div className="kv"><span className="k">Cuenta</span><span className="val">{model.banco.cuenta}</span></div>
-            <div className="kv"><span className="k">SWIFT / BIC</span><span className="val">{model.banco.swift}</span></div>
-            <div className="kv"><span className="k">Banco intermediario</span><span className="val">{model.banco.inter}</span></div>
-            <div className="kv"><span className="k">ABA</span><span className="val">{model.banco.aba}</span></div>
+            <div className="colhead">Cuenta Nacional</div>
+            <div className="kv"><span className="k">Banco</span><span className="val">{bancoNac.banco}</span></div>
+            <div className="kv"><span className="k">Cuenta</span><span className="val">{bancoNac.cuenta}</span></div>
+            <div className="kv"><span className="k">CLABE</span><span className="val">{bancoNac.clabe}</span></div>
+            <div className="colhead" style={{ marginTop: 14 }}>Cuenta Internacional</div>
+            <div className="kv"><span className="k">Banco</span><span className="val">{bancoInt.banco}</span></div>
+            <div className="kv"><span className="k">Cuenta</span><span className="val">{bancoInt.cuenta}</span></div>
+            <div className="kv"><span className="k">SWIFT / BIC</span><span className="val">{bancoInt.swift}</span></div>
+            <div className="kv"><span className="k">Banco intermediario</span><span className="val">{bancoInt.inter}</span></div>
+            <div className="kv"><span className="k">ABA</span><span className="val">{bancoInt.aba}</span></div>
+            <p className="note" style={{ marginTop: 6 }}>Cuenta internacional: datos por confirmar (Gerardo).</p>
           </div>
         </div>
         <div className="imgwide" style={{ height: "1.5in", marginTop: "auto" }}><img src="/renders/s08_acuerdos.png" alt="The Cliff Club Residences" /></div>
