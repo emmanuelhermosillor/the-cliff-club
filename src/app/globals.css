@@ -355,15 +355,16 @@ html, body, .page, .sheet, [class*="card"], .stat, .acard, .cover, .contraportad
 /* ---------- print: 1 lámina = 1 hoja carta ---------- */
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  /* v8: scoping por display (no visibility) para que Propuesta y Anexo salgan
-     como DOS PDFs independientes — el documento no objetivo no ocupa espacio
-     y no genera páginas en blanco al final del PDF. */
-  header.top, nav { display: none !important; }
-  body > *:not(:has(.printdoc)) { display: none !important; }
+  /* v10: modo de impresión explícito — el efecto de impresión pone
+     html[data-print="propuesta"|"anexo"] antes de window.print() y solo ese
+     documento se muestra. Sin :has() (frágil en contexto de impresión). */
+  header.top, nav, .cot-controls, .genbar, .resumen, .toolbar, .toast,
+  form, .fold, details { display: none !important; }
   main { display: block !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
-  main > *:not(:has(.printdoc)):not(.printdoc) { display: none !important; }
-  .docwrap:not(.printdoc) { display: none !important; }
-  .printdoc { display: block !important; margin: 0 !important; padding: 0; background: #fff; }
+  main > * { display: none !important; }
+  html[data-print="propuesta"] #doc-propuesta { display: block !important; margin: 0 !important; padding: 0; background: #fff; }
+  html[data-print="anexo"] #doc-anexo { display: block !important; margin: 0 !important; padding: 0; background: #fff; }
   .sheet, .page { box-shadow: none; margin: 0; width: 100%; min-height: 100vh; page-break-after: always; }
+  .sheet:last-child, .page:last-child { page-break-after: auto; }
 }
 @page { size: letter; margin: 0; }
