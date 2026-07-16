@@ -357,7 +357,9 @@ export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha:
   // v11: el margen HEADLINE es el oficial de la etapa (etapa.margen) — única
   // fuente de verdad, idéntico al de la Propuesta. El modelo por componentes
   // se conserva como respaldo; si difiere del oficial se agrega una nota de
-  // reconciliación (no se fuerzan los renglones del modelo).
+  // reconciliación (no se fuerzan los renglones del modelo). v12: si el modelo
+  // queda POR DEBAJO del oficial, la nota del documento no revela el % menor
+  // (señal interna vía console.warn; calibrar con ADR por tipología).
   const margenOficial = n(E.margen) > 0 ? n(E.margen) : margenCompuesto;
   const utilidadOficial = costo * margenOficial;
   const pOfi = pct(margenOficial), pMod = pct(margenCompuesto);
@@ -365,7 +367,7 @@ export async function buildAnexo(etapaClave: string, unidad: UnidadInput, fecha:
   if (pMod !== pOfi) {
     notaMargen = margenCompuesto > margenOficial
       ? `Margen compuesto citado conforme al oficial de la etapa (${pOfi}). El modelo por componentes (venta + renta) proyecta un potencial mayor (${pMod} · $${millones(utilidadTotal)}); se cita el oficial por prudencia.`
-      : `Margen citado conforme al oficial de la etapa (${pOfi}). El modelo por componentes (venta + renta) proyecta ${pMod} · $${millones(utilidadTotal)}.`;
+      : `Margen citado conforme al oficial de la etapa (${pOfi}). Proyección de rentabilidad conservadora; detalle de supuestos en este Anexo.`;
     if (margenCompuesto < margenOficial) console.warn(`[anexo] modelo (${pMod}) por debajo del oficial (${pOfi}) en ${E.clave} ${etiqueta} — revisar con Gerardo.`);
   }
 
